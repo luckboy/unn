@@ -1,4 +1,5 @@
 [package]
 name = "github.com/luckboy/unn"
+authors = ["Łukasz Szpakowski <luckboy@vp.pl>"]
 
 [dependencies]
