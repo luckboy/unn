@@ -1,0 +1,91 @@
+%
+% Copyright (c) 2026 Łukasz Szpakowski
+%
+% This Source Code Form is subject to the terms of the Mozilla Public
+% License, v. 2.0. If a copy of the MPL was not distributed with this
+% file, You can obtain one at https://mozilla.org/MPL/2.0/.
+%
+module mlp
+    function compute(net, X, are_Hs)
+        H = X
+        if are_Hs
+            Hs = .[.]
+        end
+        for i in 1 to length(net.phis)
+            Z = net.Ws[i] * H
+            H = net.phis[i](Z)
+            if are_Hs
+                push(Hs, H)
+            end
+        end
+        O = net.Ws[length(net.phis) + 1] * H
+        if are_Hs
+            .[ O, Hs .]
+        else
+            O
+        end
+    end
+
+    function backpropagate(net, X, Hs, O, Y)
+        dJ_dWs = .[.]
+        dJ_dO = net.class.dloss(net.loss, O, Y)?
+        if not isempty(net.phis)
+            push(dJ_dWs, dJ_dO * Hs[length(net.phis)]')
+            dJ_dH = net.Ws[length(net.phis) + 1]' * dJ_dO
+        else
+            push(dJ_dWs, dJ_dO * X')
+        end
+        for i in length(net.phis) to 1 by -1
+            dJ_dZ = dJ_dH .* net.class.dh(net.phis[i], Hs[i])?
+            if i > 1
+                push(dJ_dWs, dJ_dZ * Hs[i - 1]')
+                dJ_dH = net.Ws[i]' * dJ_dZ
+            else
+                push(dJ_dWs, dJ_dZ * X')
+            end
+        end
+        reverse(dJ_dWs)
+        {
+            class: net.class
+            phis: net.phis
+            Ws: dJ_dWs
+        }
+    end
+
+    function new(class, ps, loss, f)
+        Ws = .[.]
+        for i in 1 to length(ps.Ns) - 1
+            push(Ws, [f(ps.Ns[i], ps.Ns[i + 1]) fill ps.Ns[i]; fill ps.Ns[i + 1]])
+        end
+        {
+            class: class
+            phis: ps.phis
+            loss: loss
+            Ws: Ws
+        }
+    end
+
+    function renew(net, f)
+        Ws = .[.]
+        for i in 1 to length(net.Ws)
+            push(Ws, [f(columns(Ws[i]), rows(Ws[i])) fill columns(Ws[i]); fill rows(Ws[i])])
+        end
+        {
+            class: net.class
+            phis: net.phis
+            loss: net.loss
+            Ws: Ws
+        }
+    end
+    
+    function class(dh, dloss)
+        {
+            new: new
+            renew: renew
+            f: compute
+            df: backpropagate
+            dh: dh
+            dloss: dloss
+        }
+    end
+end

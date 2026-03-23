@@ -1,0 +1,66 @@
+%
+% Copyright (c) 2026 Łukasz Szpakowski
+%
+% This Source Code Form is subject to the terms of the Mozilla Public
+% License, v. 2.0. If a copy of the MPL was not distributed with this
+% file, You can obtain one at https://mozilla.org/MPL/2.0/.
+%
+module pl_luckboy_unn
+    runwithdoc("mlp.un")
+
+    function se(O, Y)
+        D = (O .- Y)
+        E = D .* D ./ 2.0
+        matrixarray((E * ones(columns(E), 1))' * ones(rows(E), 1))[1][1]
+    end
+    
+    function cel(O, Y)
+        L = .- Y .* log(O)
+        matrixarray((L * ones(columns(L), 1))' * ones(rows(L), 1))[1][1]
+    end
+    
+    function dh(f, H)
+        if f == sigmoid
+            H .* (1.0 .- H)
+        else if f == tanh
+            1.0 - H .* H
+        else
+            error("dh", "no derivative for function")
+        end
+    end
+
+    function dloss(f, O, Y)
+        if f == se
+            O .- Y
+        else if f == cel
+            softmax(O) .- Y
+        else
+            error("dloss", "no derivative for function")
+        end
+    end
+    
+    function xavier_init(IN, ON)
+        U = sqrt(6.0 / (IN + ON))
+        (rand() * 2.0 - 1.0) * U
+    end
+    
+    function zero_init(IN, ON)
+        0.0
+    end
+    
+    function new(class, ps, loss, f)
+        class.new(class, ps, loss, f)
+    end
+    
+    function renew(net, f)
+        net.class.renew(net, f)
+    end
+    
+    function compute(net, X, are_Hs)
+        net.class.f(net, X, are_Hs)
+    end
+    
+    function compute_derivative(net, X, Hs, O, Y)
+        net.class.df(net, X, Hs, O, Y)
+    end
+end

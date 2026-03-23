@@ -1,0 +1,138 @@
+%
+% Copyright (c) 2026 Łukasz Szpakowski
+%
+% This Source Code Form is subject to the terms of the Mozilla Public
+% License, v. 2.0. If a copy of the MPL was not distributed with this
+% file, You can obtain one at https://mozilla.org/MPL/2.0/.
+%
+uselib("unn")
+
+module pl_luckboy_unn_tests
+    tests()
+    usemods("pl_luckboy_unn")
+    usevars("pl_luckboy_unn")
+    
+    module shared
+        usevars("pl_luckboy_unn")
+
+        function test_mlp_compute_computes(class)
+            ps = {
+                Ns: .[ 256, 128 .]
+                phis: .[.]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand(); fill 256]
+            assert(not(not(compute(net, X, false))))
+        end
+
+        function test_mlp_compute_computes_for_one_hidden_layer(class)
+            ps = {
+                Ns: .[ 256, 512, 128 .]
+                phis: .[ sigmoid .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand(); fill 256]
+            assert(not(not(compute(net, X, false))))
+        end
+
+        function test_mlp_compute_computes_for_two_hidden_layers(class)
+            ps = {
+                Ns: .[ 256, 512, 192, 128 .]
+                phis: .[ sigmoid, tanh .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand(); fill 256]
+            assert(not(not(compute(net, X, false))))
+        end
+
+        function test_mlp_compute_computes_for_two_hidden_layers_and_64_columns(class)
+            ps = {
+                Ns: .[ 256, 512, 192, 128 .]
+                phis: .[ sigmoid, tanh .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand() fill 64; fill 256]
+            assert(not(not(compute(net, X, false))))
+        end
+
+        function test_mlp_compute_derivative_computes_derivative(class)
+            ps = {
+                Ns: .[ 256, 128 .]
+                phis: .[.]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand(); fill 256]
+            Y = [rand(); fill 128]
+            A = compute(net, X, true)
+            assert(not(not(compute_derivative(net, X, A[2], A[1], Y))))
+        end
+
+        function test_mlp_compute_derivative_computes_derivative_for_one_hidden_layer(class)
+            ps = {
+                Ns: .[ 256, 512, 128 .]
+                phis: .[ sigmoid .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand(); fill 256]
+            Y = [rand(); fill 128]
+            A = compute(net, X, true)
+            assert(not(not(compute_derivative(net, X, A[2], A[1], Y))))
+        end
+
+        function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers(class)
+            ps = {
+                Ns: .[ 256, 512, 192, 128 .]
+                phis: .[ sigmoid, tanh .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand(); fill 256]
+            Y = [rand(); fill 128]
+            A = compute(net, X, true)
+            assert(not(not(compute_derivative(net, X, A[2], A[1], Y))))
+        end
+
+        function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(class)
+            ps = {
+                Ns: .[ 256, 512, 192, 128 .]
+                phis: .[ sigmoid, tanh .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand() fill 64; fill 256]
+            Y = [rand() fill 64; fill 128]
+            A = compute(net, X, true)
+            assert(not(not(compute_derivative(net, X, A[2], A[1], Y))))
+        end
+    end
+
+    function test_mlp_compute_computes()
+        shared::test_mlp_compute_computes(mlp::class(dh, dloss))
+    end
+
+    function test_mlp_compute_computes_for_one_hidden_layer()
+        shared::test_mlp_compute_computes_for_one_hidden_layer(mlp::class(dh, dloss))
+    end
+
+    function test_mlp_compute_computes_for_two_hidden_layers()
+        shared::test_mlp_compute_computes_for_two_hidden_layers(mlp::class(dh, dloss))
+    end
+
+    function test_mlp_compute_computes_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_computes_for_two_hidden_layers_and_64_columns(mlp::class(dh, dloss))
+    end
+
+    function test_mlp_compute_derivative_computes_derivative()
+        shared::test_mlp_compute_derivative_computes_derivative(mlp::class(dh, dloss))
+    end
+    
+    function test_mlp_compute_derivative_computes_derivative_for_one_hidden_layer()
+        shared::test_mlp_compute_derivative_computes_derivative_for_one_hidden_layer(mlp::class(dh, dloss))
+    end
+
+    function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers(mlp::class(dh, dloss))
+    end
+
+    function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlp::class(dh, dloss))
+    end
+end
