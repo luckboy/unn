@@ -7,6 +7,7 @@
 %
 module pl_luckboy_unn
     runwithdoc("mlp.un")
+    runwithdoc("mlpwb.un")
 
     function se(O, Y)
         D = (O .- Y)

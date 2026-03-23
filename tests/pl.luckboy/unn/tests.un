@@ -135,4 +135,36 @@ module pl_luckboy_unn_tests
     function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns()
         shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlp::class(dh, dloss))
     end
+
+    function test_mlpwb_compute_computes()
+        shared::test_mlp_compute_computes(mlpwb::class(dh, dloss))
+    end
+
+    function test_mlpwb_compute_computes_for_one_hidden_layer()
+        shared::test_mlp_compute_computes_for_one_hidden_layer(mlpwb::class(dh, dloss))
+    end
+
+    function test_mlpwb_compute_computes_for_two_hidden_layers()
+        shared::test_mlp_compute_computes_for_two_hidden_layers(mlpwb::class(dh, dloss))
+    end
+
+    function test_mlpwb_compute_computes_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_computes_for_two_hidden_layers_and_64_columns(mlpwb::class(dh, dloss))
+    end
+
+    function test_mlpwb_compute_derivative_computes_derivative()
+        shared::test_mlp_compute_derivative_computes_derivative(mlpwb::class(dh, dloss))
+    end
+    
+    function test_mlpwb_compute_derivative_computes_derivative_for_one_hidden_layer()
+        shared::test_mlp_compute_derivative_computes_derivative_for_one_hidden_layer(mlpwb::class(dh, dloss))
+    end
+
+    function test_mlpwb_compute_derivative_computes_derivative_for_two_hidden_layers()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers(mlpwb::class(dh, dloss))
+    end
+
+    function test_mlpwb_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlpwb::class(dh, dloss))
+    end
 end
