@@ -64,6 +64,7 @@ module mlpwb
         {
             class: net.class
             phis: net.phis
+            loss: net.loss
             Ws: dJ_dWs
             bs: dJ_dbs
         }

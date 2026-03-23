@@ -48,6 +48,7 @@ module mlp
         {
             class: net.class
             phis: net.phis
+            loss: net.loss
             Ws: dJ_dWs
         }
     end
