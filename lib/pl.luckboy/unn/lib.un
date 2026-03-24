@@ -11,7 +11,7 @@ module pl_luckboy_unn
     runwithdoc("alg.un")
 
     function se(O, Y)
-        D = (O .- Y)
+        D = O .- Y
         E = D .* D ./ 2.0
         matrixarray((E * ones(columns(E), 1))' * ones(rows(E), 1))[1][1]
     end
