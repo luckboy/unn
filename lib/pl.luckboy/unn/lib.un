@@ -8,6 +8,7 @@
 module pl_luckboy_unn
     runwithdoc("mlp.un")
     runwithdoc("mlpwb.un")
+    runwithdoc("alg.un")
 
     function se(O, Y)
         D = (O .- Y)
@@ -63,5 +64,134 @@ module pl_luckboy_unn
     
     function compute_derivative(net, X, Hs, O, Y)
         net.class.df(net, X, Hs, O, Y)
+    end
+    
+    function next_minibatch(iter)
+        if iter.has_next
+            iter.has_next = false
+            .[ iter.X, iter.Y .]
+        else
+            iter.has_next = true
+            none
+        end
+    end
+    
+    function minibatch(X, Y)
+        {
+            f: next_minibatch
+            X: X
+            Y: Y
+            has_next: true
+        }
+    end
+
+    function next(iter)
+        iter.f(iter)
+    end
+    
+    function train(epochs, net, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
+        if net == none
+            if dir != none
+                net = (load(dir + pathsep + "net.bin")?)[1]
+                ps = (load(dir + pathsep + "params.bin")?)[1]
+                state = (load(dir + pathsep + "state.bin")?)[1]
+                L = (load(dir + pathsep + "loss.bin")?)[1]
+            else
+                return error("train", "no directory")
+            end
+        else
+            state = none
+            L = .[.]
+        end
+        if dir != none
+            save(dir + pathsep + "params.bin", ps)?
+        end
+        if is_plotting
+            chart = {}
+        end
+        for epoch in 1 to epochs
+            checkintr()
+            N = 0
+            loss = 0.0
+            G = renew(net, zero_init)
+            if is_printing
+                println("epoch: ", length(L) + 1)
+                print("computing gradient (", N,") ...\r")
+                flush()?
+            end
+            while true
+                A = next(minibatch_iter)
+                if A == none
+                    break
+                end
+                X = A[1]
+                Y = A[2]
+                N = N + columns(X)
+                A = compute(net, X, true)
+                O = A[1]
+                Hs = A[2]
+                loss = loss + net.loss(O, Y)
+                G = G .+ compute_derivative(net, X, Hs, O, Y)?
+                if is_printing
+                    print("computing gradient (", N,") ...\r")
+                    flush()?
+                end
+            end
+            if is_printing
+                println("computing gradient (", N,") ... done")
+            end
+            G = G ./ N
+            A = alg(net, ps, state, G)
+            net = A[1]
+            state = A[2]
+            push(L, loss)
+            if dir != none
+                save(dir + pathsep + "net.bin", net)?
+                save(dir + pathsep + "state.bin", state)?
+                save(dir + pathsep + "loss.bin", L)?
+            end
+            if is_printing
+                println("loss: ", loss)
+            end
+            if is_plotting
+                chart.x = .[ 0, length(L) - 1 .]
+                chart.y = .[ min(L), max(L) .]
+                chart.windowid = plot(chart, 0 to length(L) - 1, L, ",loss")?
+            end
+        end
+        if is_printing
+            println("result")
+            print("computing gradient (", N,") ...\r")
+            flush()?
+        end
+        checkintr()
+        loss = 0.0
+        while true
+            A = next(minibatch_iter)
+            if A == none
+                break
+            end
+            X = A[1]
+            Y = A[2]
+            O = compute(net, X, false)
+            loss = loss + net.loss(O, Y)
+            if is_printing
+                print("computing gradient (", N,") ...\r")
+                flush()?
+            end
+        end
+        push(L, loss)
+        if is_printing
+            println("computing gradient (", N,") ... done")
+        end
+        if is_printing
+            println("loss: ", loss)
+        end
+        if is_plotting
+            chart.x = .[ 0, length(L) - 1 .]
+            chart.y = .[ min(L), max(L) .]
+            chart.windowid = plot(chart, 0 to length(L) - 1, L, ",loss")?
+        end
+        net
     end
 end

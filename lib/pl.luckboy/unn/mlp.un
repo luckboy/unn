@@ -69,7 +69,7 @@ module mlp
     function renew(net, f)
         Ws = .[.]
         for i in 1 to length(net.Ws)
-            push(Ws, [f(columns(Ws[i]), rows(Ws[i])) fill columns(Ws[i]); fill rows(Ws[i])])
+            push(Ws, [f(columns(net.Ws[i]), rows(net.Ws[i])) fill columns(net.Ws[i]); fill rows(net.Ws[i])])
         end
         {
             class: net.class

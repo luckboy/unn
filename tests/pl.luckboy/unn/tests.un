@@ -154,6 +154,36 @@ module pl_luckboy_unn_tests
                 asserteq(128, rows(dnet.bs[3]))
             end
         end
+
+        function test_mlp_train_trains_mlp(class, alg)
+            ps = {
+                Ns: .[ 256, 512, 128 .]
+                phis: .[ sigmoid .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand() fill 64; fill 256]
+            Y = [rand() fill 64; fill 128]
+            ps = {
+                eta: 0.1
+            }
+            assert(not(not(train(5, net, minibatch(X, Y), ps, alg, none, false, false))))
+        end
+
+        function test_mlp_train_trains_mlp_for_saving_and_loading(class, alg)
+            ps = {
+                Ns: .[ 256, 512, 128 .]
+                phis: .[ sigmoid .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand() fill 64; fill 256]
+            Y = [rand() fill 64; fill 128]
+            ps = {
+                eta: 0.1
+            }
+            assert(not(not(mkdir("test"))))
+            assert(not(not(train(5, net, minibatch(X, Y), ps, alg, "test", false, false))))
+            assert(not(not(train(5, none, minibatch(X, Y), none, alg, "test", false, false))))
+        end
     end
 
     function test_mlp_compute_computes()
@@ -188,6 +218,14 @@ module pl_luckboy_unn_tests
         shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlp::class(dh, dloss), false)
     end
 
+    function test_mlp_train_trains_mlp()
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), alg::gd)
+    end
+
+    function test_mlp_train_trains_mlp_for_saving_and_loading()
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlp::class(dh, dloss), alg::gd)
+    end
+    
     function test_mlpwb_compute_computes()
         shared::test_mlp_compute_computes(mlpwb::class(dh, dloss))
     end
@@ -218,5 +256,13 @@ module pl_luckboy_unn_tests
 
     function test_mlpwb_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns()
         shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlpwb::class(dh, dloss), true)
+    end
+
+    function test_mlpwb_train_trains_mlp_with_biases()
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), alg::gd)
+    end
+
+    function test_mlpwb_train_trains_mlp_with_biases_for_saving_and_loading()
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpwb::class(dh, dloss), alg::gd)
     end
 end
