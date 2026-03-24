@@ -121,16 +121,16 @@ module pl_luckboy_unn
                 flush()?
             end
             while true
-                A = next(minibatch_iter)
-                if A == none
+                a = next(minibatch_iter)
+                if a == none
                     break
                 end
-                X = A[1]
-                Y = A[2]
+                X = a[1]
+                Y = a[2]
                 N = N + columns(X)
-                A = compute(net, X, true)
-                O = A[1]
-                Hs = A[2]
+                a = compute(net, X, true)
+                O = a[1]
+                Hs = a[2]
                 loss = loss + net.loss(O, Y)
                 G = G .+ compute_derivative(net, X, Hs, O, Y)?
                 if is_printing
@@ -171,12 +171,12 @@ module pl_luckboy_unn
         checkintr()
         loss = 0.0
         while true
-            A = next(minibatch_iter)
-            if A == none
+            a = next(minibatch_iter)
+            if a == none
                 break
             end
-            X = A[1]
-            Y = A[2]
+            X = a[1]
+            Y = a[2]
             O = compute(net, X, false)
             loss = loss + net.loss(O, Y)
             if is_printing
