@@ -155,7 +155,7 @@ module pl_luckboy_unn_tests
             end
         end
 
-        function test_mlp_train_trains_mlp(class, alg)
+        function test_mlp_train_trains_mlp(class, aps, alg)
             ps = {
                 Ns: .[ 256, 512, 128 .]
                 phis: .[ sigmoid .]
@@ -163,13 +163,10 @@ module pl_luckboy_unn_tests
             net = new(class, ps, se, xavier_init)
             X = [rand() fill 64; fill 256]
             Y = [rand() fill 64; fill 128]
-            ps = {
-                eta: 0.1
-            }
-            assert(not(not(train(5, net, minibatch(X, Y), ps, alg, none, false, false))))
+            assert(not(not(train(5, net, minibatch(X, Y), aps, alg, none, false, false))))
         end
 
-        function test_mlp_train_trains_mlp_for_saving_and_loading(class, alg)
+        function test_mlp_train_trains_mlp_for_saving_and_loading(class, aps, alg)
             ps = {
                 Ns: .[ 256, 512, 128 .]
                 phis: .[ sigmoid .]
@@ -177,11 +174,8 @@ module pl_luckboy_unn_tests
             net = new(class, ps, se, xavier_init)
             X = [rand() fill 64; fill 256]
             Y = [rand() fill 64; fill 128]
-            ps = {
-                eta: 0.1
-            }
             assert(not(not(mkdir("test"))))
-            assert(not(not(train(5, net, minibatch(X, Y), ps, alg, "test", false, false))))
+            assert(not(not(train(5, net, minibatch(X, Y), aps, alg, "test", false, false))))
             assert(not(not(train(5, none, minibatch(X, Y), none, alg, "test", false, false))))
         end
     end
@@ -219,11 +213,17 @@ module pl_luckboy_unn_tests
     end
 
     function test_mlp_train_trains_mlp()
-        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), alg::gd)
+        aps = {
+            eta: 0.001
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::gd)
     end
 
     function test_mlp_train_trains_mlp_for_saving_and_loading()
-        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlp::class(dh, dloss), alg::gd)
+        aps = {
+            eta: 0.001
+        }
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlp::class(dh, dloss), aps, alg::gd)
     end
     
     function test_mlpwb_compute_computes()
@@ -259,10 +259,16 @@ module pl_luckboy_unn_tests
     end
 
     function test_mlpwb_train_trains_mlp_with_biases()
-        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), alg::gd)
+        aps = {
+            eta: 0.001
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::gd)
     end
 
     function test_mlpwb_train_trains_mlp_with_biases_for_saving_and_loading()
-        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpwb::class(dh, dloss), alg::gd)
+        aps = {
+            eta: 0.001
+        }
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpwb::class(dh, dloss), aps, alg::gd)
     end
 end
