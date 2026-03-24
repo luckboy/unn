@@ -121,6 +121,7 @@ module pl_luckboy_unn
                 flush()?
             end
             while true
+                checkintr()
                 a = next(minibatch_iter)
                 if a == none
                     break
@@ -171,6 +172,7 @@ module pl_luckboy_unn
         checkintr()
         loss = 0.0
         while true
+            checkintr()
             a = next(minibatch_iter)
             if a == none
                 break
