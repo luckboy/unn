@@ -110,6 +110,7 @@ module pl_luckboy_unn
             chart = {}
         end
         for epoch in 1 to epochs
+            t0 = clock()
             checkintr()
             N = 0
             loss = 0.0
@@ -145,6 +146,7 @@ module pl_luckboy_unn
             net = A[1]
             state = A[2]
             push(L, loss)
+            t1 = clock()
             if dir != none
                 save(dir + pathsep + "net.bin", net)?
                 save(dir + pathsep + "state.bin", state)?
@@ -152,6 +154,7 @@ module pl_luckboy_unn
             end
             if is_printing
                 println("Loss: ", loss)
+                println("Time: ", formatmillis("hms", t1 - t0))
             end
             if is_plotting
                 chart.x = .[ 0, length(L) - 1 .]
@@ -164,6 +167,7 @@ module pl_luckboy_unn
             print("Computing gradient (", N,") ...\r")
             flush()?
         end
+        t0 = clock()
         checkintr()
         loss = 0.0
         while true
@@ -181,11 +185,13 @@ module pl_luckboy_unn
             end
         end
         push(L, loss)
+        t1 = clock()
         if is_printing
             println("Computing gradient (", N,") ... done")
         end
         if is_printing
             println("Loss: ", loss)
+            println("Time: ", formatmillis("hms", t1 - t0))
         end
         if is_plotting
             chart.x = .[ 0, length(L) - 1 .]
