@@ -24,7 +24,7 @@ module pl_luckboy_unn
         if f == sigmoid
             H .* (1.0 .- H)
         else if f == tanh
-            1.0 - H .* H
+            1.0 .- H .* H
         else
             error("dh", "no derivative for function")
         end
