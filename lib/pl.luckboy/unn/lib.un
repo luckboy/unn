@@ -66,6 +66,22 @@ module pl_luckboy_unn
         net.class.df(net, X, Hs, O, Y)
     end
     
+    function mlp(Ns, phis, loss, f)
+        ps = {
+            Ns: Ns
+            phis: phis
+        }
+        new(mlp::class(dh, dloss), ps, loss, f)
+    end
+
+    function mlpwb(Ns, phis, loss, f)
+        ps = {
+            Ns: Ns
+            phis: phis
+        }
+        new(mlp::class(dh, dloss), ps, loss, f)
+    end
+    
     function next_minibatch(iter)
         if iter.has_next
             iter.has_next = false
@@ -199,5 +215,10 @@ module pl_luckboy_unn
             chart.windowid = plot(chart, 0 to length(L) - 1, L, ",loss")?
         end
         .[ net, state, L .]
+    end
+    
+    function etrain(epochs, net, X, Y, ps, alg, dir, is_printing, is_plotting)
+        a = train(epochs, net, none, .[.], minibatch(X, Y), ps, alg, dir, is_printing, is_plotting)?
+        a[1]
     end
 end
