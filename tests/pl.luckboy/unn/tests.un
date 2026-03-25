@@ -155,6 +155,34 @@ module pl_luckboy_unn_tests
             end
         end
 
+        function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel(class, are_bs)
+            ps = {
+                Ns: .[ 256, 512, 192, 128 .]
+                phis: .[ sigmoid, tanh .]
+            }
+            net = new(class, ps, cel, xavier_init)
+            X = [rand() fill 64; fill 256]
+            Y = [rand() fill 64; fill 128]
+            A = compute(net, X, true)
+            dnet = compute_derivative(net, X, A[2], A[1], Y)
+            asserteq(3, length(dnet.Ws))
+            asserteq(256, columns(dnet.Ws[1]))
+            asserteq(512, rows(dnet.Ws[1]))
+            asserteq(512, columns(dnet.Ws[2]))
+            asserteq(192, rows(dnet.Ws[2]))
+            asserteq(192, columns(dnet.Ws[3]))
+            asserteq(128, rows(dnet.Ws[3]))
+            if are_bs
+                asserteq(3, length(dnet.bs))
+                asserteq(1, columns(dnet.bs[1]))
+                asserteq(512, rows(dnet.bs[1]))
+                asserteq(1, columns(dnet.bs[2]))
+                asserteq(192, rows(dnet.bs[2]))
+                asserteq(1, columns(dnet.bs[3]))
+                asserteq(128, rows(dnet.bs[3]))
+            end
+        end
+        
         function test_mlp_train_trains_mlp(class, aps, alg)
             ps = {
                 Ns: .[ 256, 512, 128 .]
@@ -212,6 +240,10 @@ module pl_luckboy_unn_tests
         shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlp::class(dh, dloss), false)
     end
 
+    function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel(mlp::class(dh, dloss), false)
+    end
+    
     function test_mlp_train_trains_mlp()
         aps = {
             eta: 0.1
@@ -226,6 +258,16 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlp::class(dh, dloss), aps, alg::gd)
     end
 
+    function test_mlp_train_trains_mlp_by_other_algorithm_for_saving_and_loading()
+        aps = {
+            eta: 0.001
+            beta1: 0.5
+            beta2: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlp::class(dh, dloss), aps, alg::adam)
+    end
+    
     function test_mlp_train_trains_mlp_by_gd()
         aps = {
             eta: 0.1
@@ -335,6 +377,10 @@ module pl_luckboy_unn_tests
         shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlpwb::class(dh, dloss), true)
     end
 
+    function test_mlpwb_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel(mlpwb::class(dh, dloss), true)
+    end
+
     function test_mlpwb_train_trains_mlp_with_biases()
         aps = {
             eta: 0.1
@@ -349,14 +395,24 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpwb::class(dh, dloss), aps, alg::gd)
     end
 
-    function test_mlp_train_trains_mlp_with_biases_by_gd()
+    function test_mlpwb_train_trains_mlp_with_biases_by_other_algorithm_for_saving_and_loading()
+        aps = {
+            eta: 0.001
+            beta1: 0.5
+            beta2: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpwb::class(dh, dloss), aps, alg::adam)
+    end
+
+    function test_mlpwb_train_trains_mlp_with_biases_by_gd()
         aps = {
             eta: 0.1
         }
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::gd)
     end
     
-    function test_mlp_train_trains_mlp_with_biases_by_exp_sgd()
+    function test_mlpwb_train_trains_mlp_with_biases_by_exp_sgd()
         aps = {
             eta0: 0.1
             lambda1: 0.1
@@ -364,7 +420,7 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::exp_sgd)
     end
 
-    function test_mlp_train_trains_mlp_with_biases_by_poly_sgd()
+    function test_mlpwb_train_trains_mlp_with_biases_by_poly_sgd()
         aps = {
             eta0: 0.1
             alpha: 0.5
@@ -373,7 +429,7 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::poly_sgd)
     end
 
-    function test_mlp_train_trains_mlp_with_biases_by_momentum()
+    function test_mlpwb_train_trains_mlp_with_biases_by_momentum()
         aps = {
             eta: 0.1
             beta: 0.5
@@ -381,7 +437,7 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::momentum)
     end
 
-    function test_mlp_train_trains_mlp_with_biases_by_adagrad()
+    function test_mlpwb_train_trains_mlp_with_biases_by_adagrad()
         aps = {
             eta: 0.001
             eps: 1.0e-6
@@ -389,7 +445,7 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::adagrad)
     end
 
-    function test_mlp_train_trains_mlp_with_biases_by_rms_prop()
+    function test_mlpwb_train_trains_mlp_with_biases_by_rms_prop()
         aps = {
             eta: 0.001
             gamma: 0.5
@@ -398,7 +454,7 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::rms_prop)
     end
 
-    function test_mlp_train_trains_mlp_with_biases_by_adadelta()
+    function test_mlpwb_train_trains_mlp_with_biases_by_adadelta()
         aps = {
             rho: 0.5
             eps: 1.0e-6
@@ -406,7 +462,7 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::adadelta)
     end
 
-    function test_mlp_train_trains_mlp_with_biases_by_adam()
+    function test_mlpwb_train_trains_mlp_with_biases_by_adam()
         aps = {
             eta: 0.001
             beta1: 0.5
@@ -416,7 +472,7 @@ module pl_luckboy_unn_tests
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::adam)
     end    
 
-    function test_mlp_train_trains_mlp_with_biases_by_yogi()
+    function test_mlpwb_train_trains_mlp_with_biases_by_yogi()
         aps = {
             eta: 0.001
             beta1: 0.5
