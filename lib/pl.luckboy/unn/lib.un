@@ -40,13 +40,21 @@ module pl_luckboy_unn
         end
     end
     
-    function xavier_init(IN, ON)
+    function xavier_init(N, M, IN, ON, is_matrix)
         U = sqrt(6.0 / (IN + ON))
-        (rand() * 2.0 - 1.0) * U
+        if is_matrix
+            [(rand() * 2.0 - 1.0) * U fill M; fill N]
+        else
+            (rand() * 2.0 - 1.0) * U
+        end
     end
     
-    function zero_init(IN, ON)
-        0.0
+    function zero_init(N, M, IN, ON, is_matrix)
+        if is_matrix
+            zeros(N, M)
+        else
+            0.0
+        end
     end
     
     function new(class, ps, loss, f)
