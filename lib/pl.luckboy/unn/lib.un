@@ -104,12 +104,12 @@ module pl_luckboy_unn
         iter.f(iter)
     end
     
-    function train(epochs, net, state, L, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
+    function train(epochs, net, state, l, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
         if net == none
             if dir != none
                 net = (load(dir + pathsep + "net.bin")?)[1]
                 state = (load(dir + pathsep + "state.bin")?)[1]
-                L = (load(dir + pathsep + "loss.bin")?)[1]
+                l = (load(dir + pathsep + "loss.bin")?)[1]
                 ps = (load(dir + pathsep + "params.bin")?)[1]
             else
                 return error("train", "no directory")
@@ -129,7 +129,7 @@ module pl_luckboy_unn
             loss = 0.0
             G = renew(net, zero_init)
             if is_printing
-                println("Epoch: ", length(L) + 1)
+                println("Epoch: ", length(l) + 1)
                 print("Computing gradient (", N,") ...\r")
                 flush()?
             end
@@ -159,21 +159,21 @@ module pl_luckboy_unn
             A = alg(net, ps, state, G)
             net = A[1]
             state = A[2]
-            push(L, loss)
+            push(l, loss)
             t1 = clock()
             if dir != none
                 save(dir + pathsep + "net.bin", net)?
                 save(dir + pathsep + "state.bin", state)?
-                save(dir + pathsep + "loss.bin", L)?
+                save(dir + pathsep + "loss.bin", l)?
             end
             if is_printing
                 println("Loss: ", loss)
                 println("Time: ", formatmillis("hms", t1 - t0))
             end
             if is_plotting
-                chart.x = .[ 0, length(L) - 1 .]
-                chart.y = .[ min(L), max(L) .]
-                chart.windowid = plot(chart, 0 to length(L) - 1, L, ",loss")?
+                chart.x = .[ 0, length(l) - 1 .]
+                chart.y = .[ min(l), max(l) .]
+                chart.windowid = plot(chart, 0 to length(l) - 1, l, ",loss")?
             end
         end
         t0 = clock()
@@ -199,7 +199,7 @@ module pl_luckboy_unn
                 flush()?
             end
         end
-        push(L, loss)
+        push(l, loss)
         if is_printing
             println("Computing gradient (", N,") ... done")
         end
@@ -209,11 +209,11 @@ module pl_luckboy_unn
             println("Time: ", formatmillis("hms", t1 - t0))
         end
         if is_plotting
-            chart.x = .[ 0, length(L) - 1 .]
-            chart.y = .[ min(L), max(L) .]
-            chart.windowid = plot(chart, 0 to length(L) - 1, L, ",loss")?
+            chart.x = .[ 0, length(l) - 1 .]
+            chart.y = .[ min(l), max(l) .]
+            chart.windowid = plot(chart, 0 to length(l) - 1, l, ",loss")?
         end
-        .[ net, state, L .]
+        .[ net, state, l .]
     end
     
     function etrain(epochs, net, X, Y, ps, alg, dir, is_printing, is_plotting)
