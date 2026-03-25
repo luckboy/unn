@@ -158,7 +158,7 @@ module pl_luckboy_unn_tests
         function test_mlp_train_trains_mlp(class, aps, alg)
             ps = {
                 Ns: .[ 256, 512, 128 .]
-                phis: .[ sigmoid .]
+                phis: .[ tanh .]
             }
             net = new(class, ps, se, xavier_init)
             X = [rand() fill 64; fill 256]
@@ -169,7 +169,7 @@ module pl_luckboy_unn_tests
         function test_mlp_train_trains_mlp_for_saving_and_loading(class, aps, alg)
             ps = {
                 Ns: .[ 256, 512, 128 .]
-                phis: .[ sigmoid .]
+                phis: .[ tanh .]
             }
             net = new(class, ps, se, xavier_init)
             X = [rand() fill 64; fill 256]
