@@ -6,8 +6,118 @@
 % file, You can obtain one at https://mozilla.org/MPL/2.0/.
 %
 module alg
+    usevar("pl_luckboy_unn::zero_init")
+    usevar("pl_luckboy_unn::renew")
+
     function gd(net, ps, state, G)
         net = net .- ps.eta .* G
+        .[ net, state .]
+    end
+    
+    function exp_sgd(net, ps, state, G)
+        if state == none
+            state = {
+                epoch: 1
+            }
+        end
+        eta = ps.eta0 * exp(-ps.lambda1 * state.epoch)
+        net = net .- eta .* G
+        state.epoch = state.epoch + 1
+        .[ net, state .]
+    end
+
+    function poly_sgd(net, ps, state, G)
+        if state == none
+            state = {
+                epoch: 1
+            }
+        end
+        eta = ps.eta0 * pow(ps.beta * state.epoch + 1.0, -ps.alpha)
+        net = net .- eta .* G
+        state.epoch = state.epoch + 1
+        .[ net, state .]
+    end
+    
+    function momentum(net, ps, state, G)
+        if state == none
+            state = {
+                V: renew(net, zero_init)
+            }
+        end
+        state.V = ps.beta .* state.V .+ G
+        net = net .- ps.eta .* state.V
+        .[ net, state .]
+    end
+    
+    function adagrad(net, ps, state, G)
+        if state == none
+            state = {
+                S: renew(net, zero_init)
+            }
+        end
+        state.S = state.S .+ G .* G
+        net = net .- (ps.eta ./ sqrt(state.S .+ ps.eps)) .* G
+        .[ net, state .]
+    end
+
+    function rms_prop(net, ps, state, G)
+        if state == none
+            state = {
+                S: renew(net, zero_init)
+            }
+        end
+        state.S = ps.gamma .* state.S .+ (1.0 - ps.gamma) .* (G .* G)
+        net = net .- (ps.eta ./ sqrt(state.S .+ ps.eps)) .* G
+        .[ net, state .]
+    end
+
+    function adadelta(net, ps, state, G)
+        if state == none
+            state = {
+                S: renew(net, zero_init)
+                Delta: renew(net, zero_init)
+            }
+        end
+        state.S = ps.rho .* state.S .+ (1.0 - ps.rho) .* (G .* G)
+        G_prime = (sqrt(state.Delta .+ ps.eps) ./ sqrt(state.S .+ ps.eps)) .* G
+        state.Delta = ps.rho .* state.Delta .+ (1.0 - ps.rho) .* (G_prime .* G_prime)
+        net = net .- G_prime
+        .[ net, state .]
+    end
+
+    function adam(net, ps, state, G)
+        if state == none
+            state = {
+                epoch: 1
+                V: renew(net, zero_init)
+                S: renew(net, zero_init)
+            }
+        end
+        state.V = ps.beta1 .* state.V .+ (1.0 - ps.beta1) .* G
+        state.S = ps.beta2 .* state.S .+ (1.0 - ps.beta2) .* (G .* G)
+        V_bias_corr = state.V ./ (1.0 - pow(ps.beta1, state.epoch))
+        S_bias_corr = state.S ./ (1.0 - pow(ps.beta2, state.epoch))
+        G_prime = (ps.eta .* V_bias_corr) ./ (sqrt(S_bias_corr) .+ ps.eps)
+        net = net .- G_prime
+        state.epoch = state.epoch + 1
+        .[ net, state .]
+    end
+
+    function yogi(net, ps, state, G)
+        if state == none
+            state = {
+                epoch: 1
+                V: renew(net, zero_init)
+                S: renew(net, zero_init)
+            }
+        end
+        state.V = ps.beta1 .* state.V .+ (1.0 - ps.beta1) .* G
+        state.S = ps.beta2 .* state.S .+ (1.0 - ps.beta2) .* (G .* G) .* sign(G .* G .- state.S)
+        V_bias_corr = state.V ./ (1.0 - pow(ps.beta1, state.epoch))
+        S_bias_corr = state.S ./ (1.0 - pow(ps.beta2, state.epoch))
+        G_prime = (ps.eta .* V_bias_corr) ./ (sqrt(S_bias_corr) .+ ps.eps)
+        net = net .- G_prime
+        state.epoch = state.epoch + 1
         .[ net, state .]
     end
 end

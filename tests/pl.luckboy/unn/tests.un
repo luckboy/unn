@@ -214,17 +214,94 @@ module pl_luckboy_unn_tests
 
     function test_mlp_train_trains_mlp()
         aps = {
-            eta: 0.001
+            eta: 0.1
         }
         shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::gd)
     end
 
     function test_mlp_train_trains_mlp_for_saving_and_loading()
         aps = {
-            eta: 0.001
+            eta: 0.1
         }
         shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlp::class(dh, dloss), aps, alg::gd)
     end
+
+    function test_mlp_train_trains_mlp_by_gd()
+        aps = {
+            eta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::gd)
+    end
+    
+    function test_mlp_train_trains_mlp_by_exp_sgd()
+        aps = {
+            eta0: 0.1
+            lambda1: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::exp_sgd)
+    end
+
+    function test_mlp_train_trains_mlp_by_poly_sgd()
+        aps = {
+            eta0: 0.1
+            alpha: 0.5
+            beta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::poly_sgd)
+    end
+
+    function test_mlp_train_trains_mlp_by_momentum()
+        aps = {
+            eta: 0.1
+            beta: 0.5
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::momentum)
+    end
+
+    function test_mlp_train_trains_mlp_by_adagrad()
+        aps = {
+            eta: 0.001
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::adagrad)
+    end
+
+    function test_mlp_train_trains_mlp_by_rms_prop()
+        aps = {
+            eta: 0.001
+            gamma: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::rms_prop)
+    end
+
+    function test_mlp_train_trains_mlp_by_adadelta()
+        aps = {
+            rho: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::adadelta)
+    end
+
+    function test_mlp_train_trains_mlp_by_adam()
+        aps = {
+            eta: 0.001
+            beta1: 0.5
+            beta2: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::adam)
+    end    
+
+    function test_mlp_train_trains_mlp_by_yogi()
+        aps = {
+            eta: 0.001
+            beta1: 0.5
+            beta2: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::yogi)
+    end    
     
     function test_mlpwb_compute_computes()
         shared::test_mlp_compute_computes(mlpwb::class(dh, dloss))
@@ -260,15 +337,92 @@ module pl_luckboy_unn_tests
 
     function test_mlpwb_train_trains_mlp_with_biases()
         aps = {
-            eta: 0.001
+            eta: 0.1
         }
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::gd)
     end
 
     function test_mlpwb_train_trains_mlp_with_biases_for_saving_and_loading()
         aps = {
-            eta: 0.001
+            eta: 0.1
         }
         shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpwb::class(dh, dloss), aps, alg::gd)
     end
+
+    function test_mlp_train_trains_mlp_with_biases_by_gd()
+        aps = {
+            eta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::gd)
+    end
+    
+    function test_mlp_train_trains_mlp_with_biases_by_exp_sgd()
+        aps = {
+            eta0: 0.1
+            lambda1: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::exp_sgd)
+    end
+
+    function test_mlp_train_trains_mlp_with_biases_by_poly_sgd()
+        aps = {
+            eta0: 0.1
+            alpha: 0.5
+            beta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::poly_sgd)
+    end
+
+    function test_mlp_train_trains_mlp_with_biases_by_momentum()
+        aps = {
+            eta: 0.1
+            beta: 0.5
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::momentum)
+    end
+
+    function test_mlp_train_trains_mlp_with_biases_by_adagrad()
+        aps = {
+            eta: 0.001
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::adagrad)
+    end
+
+    function test_mlp_train_trains_mlp_with_biases_by_rms_prop()
+        aps = {
+            eta: 0.001
+            gamma: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::rms_prop)
+    end
+
+    function test_mlp_train_trains_mlp_with_biases_by_adadelta()
+        aps = {
+            rho: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::adadelta)
+    end
+
+    function test_mlp_train_trains_mlp_with_biases_by_adam()
+        aps = {
+            eta: 0.001
+            beta1: 0.5
+            beta2: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::adam)
+    end    
+
+    function test_mlp_train_trains_mlp_with_biases_by_yogi()
+        aps = {
+            eta: 0.001
+            beta1: 0.5
+            beta2: 0.5
+            eps: 1.0e-6
+        }
+        shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::yogi)
+    end    
 end

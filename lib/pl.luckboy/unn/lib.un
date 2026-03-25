@@ -8,8 +8,7 @@
 module pl_luckboy_unn
     runwithdoc("mlp.un")
     runwithdoc("mlpwb.un")
-    runwithdoc("alg.un")
-
+    
     function se(O, Y)
         D = O .- Y
         E = D .* D ./ 2.0
@@ -177,14 +176,14 @@ module pl_luckboy_unn
                 chart.windowid = plot(chart, 0 to length(L) - 1, L, ",loss")?
             end
         end
+        t0 = clock()
+        checkintr()
+        loss = 0.0
         if is_printing
             println("Result")
             print("Computing gradient (", N,") ...\r")
             flush()?
         end
-        t0 = clock()
-        checkintr()
-        loss = 0.0
         while true
             checkintr()
             a = next(minibatch_iter)
@@ -201,10 +200,10 @@ module pl_luckboy_unn
             end
         end
         push(L, loss)
-        t1 = clock()
         if is_printing
             println("Computing gradient (", N,") ... done")
         end
+        t1 = clock()
         if is_printing
             println("Loss: ", loss)
             println("Time: ", formatmillis("hms", t1 - t0))
@@ -221,4 +220,6 @@ module pl_luckboy_unn
         a = train(epochs, net, none, .[.], minibatch(X, Y), ps, alg, dir, is_printing, is_plotting)?
         a[1]
     end
+
+    runwithdoc("alg.un")
 end
