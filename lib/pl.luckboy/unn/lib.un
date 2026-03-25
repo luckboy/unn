@@ -89,22 +89,20 @@ module pl_luckboy_unn
         iter.f(iter)
     end
     
-    function train(epochs, net, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
+    function train(epochs, net, state, L, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
         if net == none
             if dir != none
                 net = (load(dir + pathsep + "net.bin")?)[1]
-                ps = (load(dir + pathsep + "params.bin")?)[1]
                 state = (load(dir + pathsep + "state.bin")?)[1]
                 L = (load(dir + pathsep + "loss.bin")?)[1]
+                ps = (load(dir + pathsep + "params.bin")?)[1]
             else
                 return error("train", "no directory")
             end
         else
-            state = none
-            L = .[.]
-        end
-        if dir != none
-            save(dir + pathsep + "params.bin", ps)?
+            if dir != none
+                save(dir + pathsep + "params.bin", ps)?
+            end
         end
         if is_plotting
             chart = {}
@@ -200,6 +198,6 @@ module pl_luckboy_unn
             chart.y = .[ min(L), max(L) .]
             chart.windowid = plot(chart, 0 to length(L) - 1, L, ",loss")?
         end
-        net
+        .[ net, state, L .]
     end
 end

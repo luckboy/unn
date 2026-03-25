@@ -163,7 +163,7 @@ module pl_luckboy_unn_tests
             net = new(class, ps, se, xavier_init)
             X = [rand() fill 64; fill 256]
             Y = [rand() fill 64; fill 128]
-            assert(not(not(train(5, net, minibatch(X, Y), aps, alg, none, false, false))))
+            assert(not(not(train(5, net, none, .[.], minibatch(X, Y), aps, alg, none, false, false))))
         end
 
         function test_mlp_train_trains_mlp_for_saving_and_loading(class, aps, alg)
@@ -175,8 +175,8 @@ module pl_luckboy_unn_tests
             X = [rand() fill 64; fill 256]
             Y = [rand() fill 64; fill 128]
             assert(not(not(mkdir("test"))))
-            assert(not(not(train(5, net, minibatch(X, Y), aps, alg, "test", false, false))))
-            assert(not(not(train(5, none, minibatch(X, Y), none, alg, "test", false, false))))
+            assert(not(not(train(5, net, none, .[.], minibatch(X, Y), aps, alg, "test", false, false))))
+            assert(not(not(train(5, none, none, none, minibatch(X, Y), none, alg, "test", false, false))))
         end
     end
 
