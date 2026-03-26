@@ -43,7 +43,7 @@ module pl_luckboy_unn
             H = f(Z)
             H .+ sigmoid(Z) .* (1.0 .- H)
         else
-            error("dh", "no derivative for function")
+            error("dphi", "no derivative for function")
         end
     end
 
