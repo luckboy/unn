@@ -86,7 +86,7 @@ module pl_luckboy_unn
             Ns: Ns
             phis: phis
         }
-        new(mlp::class(dh, dloss), ps, loss, f)
+        new(mlpwb::class(dh, dloss), ps, loss, f)
     end
     
     function next_minibatch(iter)
