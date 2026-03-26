@@ -168,7 +168,7 @@ module pl_luckboy_unn
             checkintr()
             N = 0
             loss = 0.0
-            G = renew(net, zero_init)
+            g = renew(net, zero_init)
             if is_printing
                 println("Epoch: ", length(l) + 1)
                 print("Computing gradient (", N,") ...\r")
@@ -187,7 +187,7 @@ module pl_luckboy_unn
                 O = a[1]
                 Hs = a[2]
                 loss = loss + net.loss(O, Y)
-                G = G .+ compute_derivative(net, X, Hs, O, Y)?
+                g = g .+ compute_derivative(net, X, Hs, O, Y)?
                 if is_printing
                     print("Computing gradient (", N,") ...\r")
                     flush()?
@@ -196,8 +196,8 @@ module pl_luckboy_unn
             if is_printing
                 println("Computing gradient (", N,") ... done")
             end
-            G = G ./ N
-            A = alg(net, ps, state, G)
+            g = g ./ N
+            A = alg(net, ps, state, g)
             net = A[1]
             state = A[2]
             push(l, loss)
