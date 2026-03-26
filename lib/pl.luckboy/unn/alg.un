@@ -20,7 +20,7 @@ module alg
                 epoch: 1
             }
         end
-        eta = ps.eta0 * exp(-ps.lambda1 * state.epoch)
+        eta = ps.eta0 * exp(-ps.lambda * state.epoch)
         net = net .- eta .* G
         state.epoch = state.epoch + 1
         .[ net, state .]

@@ -316,7 +316,7 @@ module pl_luckboy_unn_tests
     function test_mlp_train_trains_mlp_by_exp_sgd()
         aps = {
             eta0: 0.1
-            lambda1: 0.1
+            lambda: 0.1
         }
         shared::test_mlp_train_trains_mlp(mlp::class(dh, dloss), aps, alg::exp_sgd)
     end
@@ -453,7 +453,7 @@ module pl_luckboy_unn_tests
     function test_mlpwb_train_trains_mlp_with_biases_by_exp_sgd()
         aps = {
             eta0: 0.1
-            lambda1: 0.1
+            lambda: 0.1
         }
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::exp_sgd)
     end
