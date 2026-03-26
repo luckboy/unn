@@ -222,7 +222,7 @@ module pl_luckboy_unn
         loss = 0.0
         if is_printing
             println("Result")
-            print("Computing gradient (", N,") ...\r")
+            print("Computing loss (", N,") ...\r")
             flush()?
         end
         while true
@@ -236,13 +236,13 @@ module pl_luckboy_unn
             O = compute(net, X, false)
             loss = loss + net.loss(O, Y)
             if is_printing
-                print("Computing gradient (", N,") ...\r")
+                print("Computing loss (", N,") ...\r")
                 flush()?
             end
         end
         push(l, loss)
         if is_printing
-            println("Computing gradient (", N,") ... done")
+            println("Computing loss (", N,") ... done")
         end
         t1 = clock()
         if is_printing
