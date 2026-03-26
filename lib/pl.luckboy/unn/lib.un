@@ -57,12 +57,12 @@ module pl_luckboy_unn
         end
     end
     
-    function new(class, ps, loss, f)
-        class.new(class, ps, loss, f)
+    function new(class, ps, loss, init)
+        class.new(class, ps, loss, init)
     end
     
-    function renew(net, f)
-        net.class.renew(net, f)
+    function renew(net, init)
+        net.class.renew(net, init)
     end
     
     function compute(net, X, are_Hs)

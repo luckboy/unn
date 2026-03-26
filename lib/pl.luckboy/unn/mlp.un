@@ -53,10 +53,10 @@ module mlp
         }
     end
 
-    function new(class, ps, loss, f)
+    function new(class, ps, loss, init)
         Ws = .[.]
         for i in 1 to length(ps.Ns) - 1
-            push(Ws, f(ps.Ns[i + 1], ps.Ns[i], ps.Ns[i], ps.Ns[i + 1], true))
+            push(Ws, init(ps.Ns[i + 1], ps.Ns[i], ps.Ns[i], ps.Ns[i + 1], true))
         end
         {
             class: class
@@ -66,10 +66,10 @@ module mlp
         }
     end
 
-    function renew(net, f)
+    function renew(net, init)
         Ws = .[.]
         for i in 1 to length(net.Ws)
-            push(Ws, f(rows(net.Ws[i]), columns(net.Ws[i]), columns(net.Ws[i]), rows(net.Ws[i]), true))
+            push(Ws, init(rows(net.Ws[i]), columns(net.Ws[i]), columns(net.Ws[i]), rows(net.Ws[i]), true))
         end
         {
             class: net.class

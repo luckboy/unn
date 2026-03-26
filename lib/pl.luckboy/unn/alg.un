@@ -75,12 +75,12 @@ module alg
         if state == none
             state = {
                 S: renew(net, zero_init)
-                Delta: renew(net, zero_init)
+                D: renew(net, zero_init)
             }
         end
         state.S = ps.rho .* state.S .+ (1.0 - ps.rho) .* (G .* G)
-        G_prime = (sqrt(state.Delta .+ ps.eps) ./ sqrt(state.S .+ ps.eps)) .* G
-        state.Delta = ps.rho .* state.Delta .+ (1.0 - ps.rho) .* (G_prime .* G_prime)
+        G_prime = (sqrt(state.D .+ ps.eps) ./ sqrt(state.S .+ ps.eps)) .* G
+        state.D = ps.rho .* state.D .+ (1.0 - ps.rho) .* (G_prime .* G_prime)
         net = net .- G_prime
         .[ net, state .]
     end
