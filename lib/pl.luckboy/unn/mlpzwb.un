@@ -1,0 +1,115 @@
+%
+% Copyright (c) 2026 Łukasz Szpakowski
+%
+% This Source Code Form is subject to the terms of the Mozilla Public
+% License, v. 2.0. If a copy of the MPL was not distributed with this
+% file, You can obtain one at https://mozilla.org/MPL/2.0/.
+%
+module mlpzwb
+    function compute(net, X, are_Zs)
+        H = X
+        if are_Zs
+            Zs = .[.]
+        end
+        for i in 1 to length(net.phis)
+            if columns(X) > 1
+                b = repeat(net.bs[i], columns(X))
+            else
+                b = net.bs[i]
+            end
+            Z = net.Ws[i] * H + b
+            H = net.phis[i](Z)
+            if are_Zs
+                push(Zs, Z)
+            end
+        end
+        if columns(X) > 1
+            b = repeat(net.bs[length(net.phis) + 1], columns(X))
+        else
+            b = net.bs[length(net.phis) + 1]
+        end
+        O = net.Ws[length(net.phis) + 1] * H + b
+        if are_Zs
+            .[ O, Zs .]
+        else
+            O
+        end
+    end
+
+    function backpropagate(net, X, Zs, O, Y)
+        dJ_dWs = .[.]
+        dJ_dbs = .[.]
+        dJ_dO = net.class.dloss(net.loss, O, Y)?
+        if not isempty(net.phis)
+            push(dJ_dWs, dJ_dO * net.phis[length(net.phis)](Zs[length(net.phis)])')
+            push(dJ_dbs, dJ_dO * ones(columns(X), 1))
+            dJ_dH = net.Ws[length(net.phis) + 1]' * dJ_dO
+        else
+            push(dJ_dWs, dJ_dO * X')
+            push(dJ_dbs, dJ_dO * ones(columns(X), 1))
+        end
+        for i in length(net.phis) to 1 by -1
+            dJ_dZ = dJ_dH .* net.class.dphi(net.phis[i], Zs[i])?
+            if i > 1
+                push(dJ_dWs, dJ_dZ * net.phis[i - 1](Zs[i - 1])')
+                push(dJ_dbs, dJ_dZ * ones(columns(X), 1))
+                dJ_dH = net.Ws[i]' * dJ_dZ
+            else
+                push(dJ_dWs, dJ_dZ * X')
+                push(dJ_dbs, dJ_dZ * ones(columns(X), 1))
+            end
+        end
+        reverse(dJ_dWs)
+        reverse(dJ_dbs)
+        {
+            class: net.class
+            phis: net.phis
+            loss: net.loss
+            Ws: dJ_dWs
+            bs: dJ_dbs
+        }
+    end
+
+    function new(class, ps, loss, init)
+        Ws = .[.]
+        bs = .[.]
+        for i in 1 to length(ps.Ns) - 1
+            push(Ws, init(ps.Ns[i + 1], ps.Ns[i], ps.Ns[i], ps.Ns[i + 1], true))
+            push(bs, init(ps.Ns[i + 1], 1, ps.Ns[i], ps.Ns[i + 1], true))
+        end
+        {
+            class: class
+            phis: ps.phis
+            loss: loss
+            Ws: Ws
+            bs: bs
+        }
+    end
+
+    function renew(net, init)
+        Ws = .[.]
+        bs = .[.]
+        for i in 1 to length(net.Ws)
+            push(Ws, init(rows(net.Ws[i]), columns(net.Ws[i]), columns(net.Ws[i]), rows(net.Ws[i]), true))
+            push(bs, init(rows(net.Ws[i]), 1, columns(net.Ws[i]), rows(net.Ws[i]), true))
+        end
+        {
+            class: net.class
+            phis: net.phis
+            loss: net.loss
+            Ws: Ws
+            bs: bs
+        }
+    end
+    
+    function class(dphi, dloss)
+        {
+            new: new
+            renew: renew
+            f: compute
+            df: backpropagate
+            dphi: dphi
+            dloss: dloss
+        }
+    end
+end

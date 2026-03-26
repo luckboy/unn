@@ -55,6 +55,16 @@ module pl_luckboy_unn_tests
             compute(net, X, false)
         end
 
+        function test_mlp_compute_computes_for_two_hidden_layers_and_64_columns_and_swish(class)
+            ps = {
+                Ns: .[ 256, 512, 192, 128 .]
+                phis: .[ sigmoid, swish .]
+            }
+            net = new(class, ps, se, xavier_init)
+            X = [rand() fill 64; fill 256]
+            compute(net, X, false)
+        end
+        
         function test_mlp_compute_derivative_computes_derivative(class, are_bs)
             ps = {
                 Ns: .[ 256, 128 .]
@@ -161,6 +171,34 @@ module pl_luckboy_unn_tests
                 phis: .[ sigmoid, tanh .]
             }
             net = new(class, ps, cel, xavier_init)
+            X = [rand() fill 64; fill 256]
+            Y = [rand() fill 64; fill 128]
+            A = compute(net, X, true)
+            dnet = compute_derivative(net, X, A[2], A[1], Y)
+            asserteq(3, length(dnet.Ws))
+            asserteq(256, columns(dnet.Ws[1]))
+            asserteq(512, rows(dnet.Ws[1]))
+            asserteq(512, columns(dnet.Ws[2]))
+            asserteq(192, rows(dnet.Ws[2]))
+            asserteq(192, columns(dnet.Ws[3]))
+            asserteq(128, rows(dnet.Ws[3]))
+            if are_bs
+                asserteq(3, length(dnet.bs))
+                asserteq(1, columns(dnet.bs[1]))
+                asserteq(512, rows(dnet.bs[1]))
+                asserteq(1, columns(dnet.bs[2]))
+                asserteq(192, rows(dnet.bs[2]))
+                asserteq(1, columns(dnet.bs[3]))
+                asserteq(128, rows(dnet.bs[3]))
+            end
+        end
+        
+        function test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_swish(class, are_bs)
+            ps = {
+                Ns: .[ 256, 512, 192, 128 .]
+                phis: .[ sigmoid, swish .]
+            }
+            net = new(class, ps, se, xavier_init)
             X = [rand() fill 64; fill 256]
             Y = [rand() fill 64; fill 128]
             A = compute(net, X, true)
@@ -481,4 +519,120 @@ module pl_luckboy_unn_tests
         }
         shared::test_mlp_train_trains_mlp(mlpwb::class(dh, dloss), aps, alg::yogi)
     end    
+
+    function test_mlpz_compute_computes()
+        shared::test_mlp_compute_computes(mlpz::class(dphi, dloss))
+    end
+
+    function test_mlpz_compute_computes_for_one_hidden_layer()
+        shared::test_mlp_compute_computes_for_one_hidden_layer(mlpz::class(dphi, dloss))
+    end
+
+    function test_mlpz_compute_computes_for_two_hidden_layers()
+        shared::test_mlp_compute_computes_for_two_hidden_layers(mlpz::class(dh, dloss))
+    end
+
+    function test_mlpz_compute_computes_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_computes_for_two_hidden_layers_and_64_columns(mlpz::class(dphi, dloss))
+    end
+
+    function test_mlpz_compute_computes_for_two_hidden_layers_and_64_columns_and_swish()
+        shared::test_mlp_compute_computes_for_two_hidden_layers_and_64_columns_and_swish(mlpz::class(dphi, dloss))
+    end
+    
+    function test_mlpz_compute_derivative_computes_derivative()
+        shared::test_mlp_compute_derivative_computes_derivative(mlpz::class(dphi, dloss), false)
+    end
+    
+    function test_mlpz_compute_derivative_computes_derivative_for_one_hidden_layer()
+        shared::test_mlp_compute_derivative_computes_derivative_for_one_hidden_layer(mlpz::class(dphi, dloss), false)
+    end
+
+    function test_mlpz_compute_derivative_computes_derivative_for_two_hidden_layers()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers(mlpz::class(dphi, dloss), false)
+    end
+
+    function test_mlpz_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlpz::class(dphi, dloss), false)
+    end
+
+    function test_mlpz_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel(mlpz::class(dphi, dloss), false)
+    end
+    
+    function test_mlpz_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_swish()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_swish(mlpz::class(dphi, dloss), false)
+    end
+    
+    function test_mlpz_train_trains_mlp()
+        aps = {
+            eta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlpz::class(dphi, dloss), aps, alg::gd)
+    end
+
+    function test_mlpz_train_trains_mlp_for_saving_and_loading()
+        aps = {
+            eta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpz::class(dphi, dloss), aps, alg::gd)
+    end
+
+    function test_mlpzwb_compute_computes()
+        shared::test_mlp_compute_computes(mlpzwb::class(dphi, dloss))
+    end
+
+    function test_mlpzwb_compute_computes_for_one_hidden_layer()
+        shared::test_mlp_compute_computes_for_one_hidden_layer(mlpzwb::class(dphi, dloss))
+    end
+
+    function test_mlpzwb_compute_computes_for_two_hidden_layers()
+        shared::test_mlp_compute_computes_for_two_hidden_layers(mlpzwb::class(dh, dloss))
+    end
+
+    function test_mlpzwb_compute_computes_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_computes_for_two_hidden_layers_and_64_columns(mlpzwb::class(dphi, dloss))
+    end
+
+    function test_mlpzwb_compute_computes_for_two_hidden_layers_and_64_columns_and_swish()
+        shared::test_mlp_compute_computes_for_two_hidden_layers_and_64_columns_and_swish(mlpzwb::class(dphi, dloss))
+    end
+    
+    function test_mlpzwb_compute_derivative_computes_derivative()
+        shared::test_mlp_compute_derivative_computes_derivative(mlpzwb::class(dphi, dloss), false)
+    end
+    
+    function test_mlpzwb_compute_derivative_computes_derivative_for_one_hidden_layer()
+        shared::test_mlp_compute_derivative_computes_derivative_for_one_hidden_layer(mlpzwb::class(dphi, dloss), false)
+    end
+
+    function test_mlpzwb_compute_derivative_computes_derivative_for_two_hidden_layers()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers(mlpzwb::class(dphi, dloss), false)
+    end
+
+    function test_mlpzwb_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns(mlpzwb::class(dphi, dloss), false)
+    end
+
+    function test_mlpzwb_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_cel(mlpzwb::class(dphi, dloss), false)
+    end
+    
+    function test_mlpzwb_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_swish()
+        shared::test_mlp_compute_derivative_computes_derivative_for_two_hidden_layers_and_64_columns_and_swish(mlpzwb::class(dphi, dloss), false)
+    end
+    
+    function test_mlpzwb_train_trains_mlp_with_biases()
+        aps = {
+            eta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp(mlpzwb::class(dphi, dloss), aps, alg::gd)
+    end
+
+    function test_mlpzwb_train_trains_mlp_with_biases_for_saving_and_loading()
+        aps = {
+            eta: 0.1
+        }
+        shared::test_mlp_train_trains_mlp_for_saving_and_loading(mlpzwb::class(dphi, dloss), aps, alg::gd)
+    end
 end

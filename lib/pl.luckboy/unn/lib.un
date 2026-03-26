@@ -8,6 +8,8 @@
 module pl_luckboy_unn
     runwithdoc("mlp.un")
     runwithdoc("mlpwb.un")
+    runwithdoc("mlpz.un")
+    runwithdoc("mlpzwb.un")
     
     function se(O, Y)
         D = O .- Y
@@ -25,6 +27,21 @@ module pl_luckboy_unn
             H .* (1.0 .- H)
         else if f == tanh
             1.0 .- H .* H
+        else
+            error("dh", "no derivative for function")
+        end
+    end
+
+    function dphi(f, Z)
+        if f == sigmoid
+            H = f(Z)
+            H .* (1.0 .- H)
+        else if f == tanh
+            H = f(Z)
+            1.0 .- H .* H
+        else if f == swish
+            H = f(Z)
+            H .+ sigmoid(Z) .* (1.0 .- H)
         else
             error("dh", "no derivative for function")
         end
@@ -87,6 +104,22 @@ module pl_luckboy_unn
             phis: phis
         }
         new(mlpwb::class(dh, dloss), ps, loss, f)
+    end
+
+    function mlpz(Ns, phis, loss, f)
+        ps = {
+            Ns: Ns
+            phis: phis
+        }
+        new(mlpz::class(dphi, dloss), ps, loss, f)
+    end
+
+    function mlpzwb(Ns, phis, loss, f)
+        ps = {
+            Ns: Ns
+            phis: phis
+        }
+        new(mlpzwb::class(dphi, dloss), ps, loss, f)
     end
     
     function next_minibatch(iter)
