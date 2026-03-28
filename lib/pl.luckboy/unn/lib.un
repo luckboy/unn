@@ -11,17 +11,35 @@ module pl_luckboy_unn
     runwithdoc("mlpz.un")
     runwithdoc("mlpzwb.un")
     
+    %% Calculates the squared error.
+    %%
+    %% The squared error is:
+    %%
+    %% $$ e = \sum^N_{i = 1}{\sum^M_{j = 1}{\frac{1}{2}(o_{ij} - y_{ij})^2}} $$
     function se(O, Y)
         D = O .- Y
         E = D .* D ./ 2.0
         matrixarray((E * ones(columns(E), 1))' * ones(rows(E), 1))[1][1]
     end
     
+    %% Calculates the cross-entropy loss.
+    %%
+    %% The cross-entropy loss is:
+    %%
+    %% $$ l = -\sum^N_{i = 1}{\sum^M_{j = 1}{y_{ij} \ln{o_{ij}}}} $$
     function cel(O, Y)
         L = .- Y .* log(O)
         matrixarray((L * ones(columns(L), 1))' * ones(rows(L), 1))[1][1]
     end
     
+    %% Calculates the derivative of hidden layer.
+    %%
+    %% This function takes the `f` function and the `H` output of hidden layer and than calculates
+    %% the derivative for they. If the `f` function isn't supported, this function returns an
+    %% error. This function supports the following functions:
+    %%
+    %% - `sigmoid`
+    %% - `tanh`
     function dh(f, H)
         if f == sigmoid
             H .* (1.0 .- H)
@@ -32,6 +50,15 @@ module pl_luckboy_unn
         end
     end
 
+    %% Calculates the derivative of activation function.
+    %%
+    %% This function takes the `f` function and the `Z` input of activation function and then
+    %% calculates the derivative for they. If the `f` function isn't supported, this function
+    %% returns an error. This function supports the following functions:
+    %%
+    %% - `sigmoid`
+    %% - `tanh`
+    %% - `swish`
     function dphi(f, Z)
         if f == sigmoid
             H = f(Z)
@@ -47,6 +74,15 @@ module pl_luckboy_unn
         end
     end
 
+    %% Calculates the derivative of loss function.
+    %%
+    %% This function takes the `f` function, the `O` actual output of neural network, and the `Y`
+    %% expected output of neural network and then calculates the derivative for they. If the `f`
+    %% function isn't supported, this function returns an error. This function supports the
+    %% following functions:
+    %%
+    %% - `se`
+    %% - `cel`
     function dloss(f, O, Y)
         if f == se
             O .- Y
@@ -56,7 +92,13 @@ module pl_luckboy_unn
             error("dloss", "no derivative for function")
         end
     end
-    
+
+    %% A Xavier initialization.
+    %%
+    %% This function creates an initialized matrix if the `is_matrix` flag is `true`, otherwise
+    %% an initialized number. The range of Xavier initialization is:
+    %%
+    %% $$ U(-\sqrt{\frac{6}{N_{\mathrm{in}} + N_{\mathrm{out}}}}, \sqrt{\frac{6}{N_{\mathrm{in}} + N_{\mathrm{out}}}}) $$
     function xavier_init(N, M, IN, ON, is_matrix)
         U = sqrt(6.0 / (IN + ON))
         if is_matrix
@@ -66,6 +108,10 @@ module pl_luckboy_unn
         end
     end
     
+    %% A zero initialization.
+    %%
+    %% This function creates an initialized matrix if the `is_matrix` flag is `true`, otherwise
+    %% an initialized number. The zero initialization fills the matrix with zeros or returns zero.
     function zero_init(N, M, IN, ON, is_matrix)
         if is_matrix
             zeros(N, M)
@@ -73,15 +119,28 @@ module pl_luckboy_unn
             0.0
         end
     end
-    
+
+    %% Creates a neural network for the class of neural network.
+    %%
+    %% This function takes the class of neural network, the `ps` parameters, the `loss` function,
+    %% and the `init` initialization function and then creates a neural network for they. 
     function new(class, ps, loss, init)
         class.new(class, ps, loss, init)
     end
     
+    %% Recreates the neural network.
+    %%
+    %% This function takes the neural network, and the `init` initialization function and then
+    %% creates a new neural network from the neural network for the `init` initialization
+    %% function. 
     function renew(net, init)
         net.class.renew(net, init)
     end
     
+    %% Computes the output of neural network for the nural network and the `X` inputs.
+    %%
+    %% This function returns array with the output of neural network and the outputs of hidden
+    %% layers if the `are_Hs` is `true`, otherwise only the output of neural network.
     function compute(net, X, are_Hs)
         net.class.f(net, X, are_Hs)
     end
