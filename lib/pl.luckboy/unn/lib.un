@@ -276,7 +276,7 @@ module pl_luckboy_unn
     %% passed by the minibatch iterator. If the `dir` path isn't `none`, this function saves the
     %% neural network,the algorithm  state, the values of loss function, and the algorithm 
     %% parameters. A training progress is printed by this function if the `is_printing` flag is 
-    %% set. A progess chart is shown by this function if the `is_plotting` flag is set. If the 
+    %% set. A progress chart is shown by this function if the `is_plotting` flag is set. If the 
     %% neural network is `none`, this function ignores the `state` argument and the `l` argument 
     %% and loads the neural network, the algorithm  state, the values of loss function, and the 
     %% algorithm parameters from the `dir` directory.
@@ -400,7 +400,7 @@ module pl_luckboy_unn
     %% `X` inputs and the `Y` outputs. If the `dir` path isn't `none`, this function saves the
     %% neural network, the algorithm  state, the values of loss function, and the algorithm
     %% parameters. A training progress is printed by this function if the `is_printing` flag is
-    %% set. A progess chart is shown by this function if the `is_plotting` flag is set. If the
+    %% set. A progress chart is shown by this function if the `is_plotting` flag is set. If the
     %% neural network is `none`, this function loads the neural network, the training state, the
     %% values of loss function, and the algorithm parameters from the `dir` directory.
     %%
