@@ -26,7 +26,7 @@ module pl_luckboy_unn
     %%
     %% The cross-entropy loss is:
     %%
-    %% $$ l = -\sum^N_{i = 1}{\sum^M_{j = 1}{y_{ij} \ln{o_{ij}}}} $$
+    %% $$ l = \sum^N_{i = 1}{\sum^M_{j = 1}{-y_{ij} \ln{o_{ij}}}} $$
     function cel(O, Y)
         L = .- Y .* log(O)
         matrixarray((L * ones(columns(L), 1))' * ones(rows(L), 1))[1][1]
@@ -34,7 +34,7 @@ module pl_luckboy_unn
     
     %% Calculates the derivative of hidden layer.
     %%
-    %% This function takes the `f` function and the `H` output of hidden layer and than calculates
+    %% This function takes the `f` function and the `H` outputs of hidden layer and than calculates
     %% the derivative for they. If the `f` function isn't supported, this function returns an
     %% error. This function supports the following functions:
     %%
@@ -52,7 +52,7 @@ module pl_luckboy_unn
 
     %% Calculates the derivative of activation function.
     %%
-    %% This function takes the `f` function and the `Z` input of activation function and then
+    %% This function takes the `f` function and the `Z` inputs of activation function and then
     %% calculates the derivative for they. If the `f` function isn't supported, this function
     %% returns an error. This function supports the following functions:
     %%
@@ -76,10 +76,9 @@ module pl_luckboy_unn
 
     %% Calculates the derivative of loss function.
     %%
-    %% This function takes the `f` function, the `O` actual output of neural network, and the `Y`
-    %% expected output of neural network and then calculates the derivative for they. If the `f`
-    %% function isn't supported, this function returns an error. This function supports the
-    %% following functions:
+    %% This function takes the `f` function, the `O` actual outputs, and the `Y` expected outputs
+    %% and then calculates the derivative for they. If the `f` function isn't supported, this
+    %% function returns an error. This function supports the following functions:
     %%
     %% - `se`
     %% - `cel`
@@ -96,9 +95,9 @@ module pl_luckboy_unn
     %% A Xavier initialization.
     %%
     %% This function creates an initialized matrix if the `is_matrix` flag is `true`, otherwise
-    %% an initialized number. The range of Xavier initialization is:
+    %% an initialized number. The distribution range of Xavier initialization is:
     %%
-    %% $$ U(-\sqrt{\frac{6}{N_{\mathrm{in}} + N_{\mathrm{out}}}}, \sqrt{\frac{6}{N_{\mathrm{in}} + N_{\mathrm{out}}}}) $$
+    %% $$ U(-\sqrt{\frac{6}{N_{\mathrm{in}} + N_{\operatorname{out}}}}, \sqrt{\frac{6}{N_{\operatorname{in}} + N_{\mathrm{out}}}}) $$
     function xavier_init(N, M, IN, ON, is_matrix)
         U = sqrt(6.0 / (IN + ON))
         if is_matrix
@@ -122,8 +121,9 @@ module pl_luckboy_unn
 
     %% Creates a neural network for the class of neural network.
     %%
-    %% This function takes the class of neural network, the `ps` parameters, the `loss` function,
-    %% and the `init` initialization function and then creates a neural network for they. 
+    %% This function takes the class of neural network, the `ps` parameters of neural network
+    %% creation, the `loss` loss function, and the `init` initialization function and then creates
+    %% a neural network for they. 
     function new(class, ps, loss, init)
         class.new(class, ps, loss, init)
     end
@@ -131,24 +131,41 @@ module pl_luckboy_unn
     %% Recreates the neural network.
     %%
     %% This function takes the neural network, and the `init` initialization function and then
-    %% creates a new neural network from the neural network for the `init` initialization
-    %% function. 
+    %% creates a new neural network from the neural network for the `init` initialization funciton.
+    %% The activation functions and the loss function are copied to the new neural network. 
     function renew(net, init)
         net.class.renew(net, init)
     end
     
-    %% Computes the output of neural network for the nural network and the `X` inputs.
+    %% Computes the output of neural network for the nural network.
     %%
     %% This function returns array with the output of neural network and the outputs of hidden
-    %% layers if the `are_Hs` is `true`, otherwise only the output of neural network.
+    %% layers if the `are_Hs` is `true`, otherwise only the outputs of neural network.
     function compute(net, X, are_Hs)
         net.class.f(net, X, are_Hs)
     end
     
+    %% Computes the partial derivatives of parameters of neural network.
+    %%
+    %% This function takes the neural network, the `X` inputs, the `Hs` outputs of hidden layers,
+    %% the `O` actual outputs, the `Y` expected outputs and then computes the partial derivatives
+    %% of parameters of neural network. 
     function compute_derivative(net, X, Hs, O, Y)
         net.class.df(net, X, Hs, O, Y)
     end
     
+    %% Creates a MLP without biases.
+    %%
+    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
+    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
+    %% initialization function.
+    %%
+    %% # Examples
+    %%
+    %% ```
+    %% net = mpl(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% ```
     function mlp(Ns, phis, loss, init)
         ps = {
             Ns: Ns
@@ -157,6 +174,19 @@ module pl_luckboy_unn
         new(mlp::class(dh, dloss), ps, loss, init)
     end
 
+    %% Creates a MLP with biases.
+    %%
+    %%
+    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
+    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
+    %% initialization function.
+    %%
+    %% # Examples
+    %%
+    %% ```
+    %% net = mplwb(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% ```
     function mlpwb(Ns, phis, loss, init)
         ps = {
             Ns: Ns
@@ -165,6 +195,18 @@ module pl_luckboy_unn
         new(mlpwb::class(dh, dloss), ps, loss, init)
     end
 
+    %% Creates a MLP without biases for the swish function.
+    %%
+    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
+    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
+    %% initialization function.
+    %%
+    %% # Examples
+    %%
+    %% ```
+    %% net = mplz(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% ```
     function mlpz(Ns, phis, loss, init)
         ps = {
             Ns: Ns
@@ -173,6 +215,18 @@ module pl_luckboy_unn
         new(mlpz::class(dphi, dloss), ps, loss, init)
     end
 
+    %% Creates a MLP with biases for the swish function.
+    %%
+    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
+    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
+    %% initialization function.
+    %%
+    %% # Examples
+    %%
+    %% ```
+    %% net = mplzwb(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% ```
     function mlpzwb(Ns, phis, loss, init)
         ps = {
             Ns: Ns
@@ -181,6 +235,7 @@ module pl_luckboy_unn
         new(mlpzwb::class(dphi, dloss), ps, loss, init)
     end
     
+    %% Returns a next minibatch.
     function next_minibatch(iter)
         if iter.has_next
             iter.has_next = false
@@ -191,6 +246,7 @@ module pl_luckboy_unn
         end
     end
     
+    %% Creates a minibatch iterator form the `X` inputs and `Y` outputs.
     function minibatch(X, Y)
         {
             f: next_minibatch
@@ -200,6 +256,10 @@ module pl_luckboy_unn
         }
     end
 
+    %% Returns the next element for the iterator.
+    %%
+    %% This function returns the next element if the next element exists, otherwise returns `none`
+    %% and then resets the iterator to the initial state.
     function next(iter)
         iter.f(iter)
     end
