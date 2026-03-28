@@ -90,36 +90,36 @@ module pl_luckboy_unn
         net.class.df(net, X, Hs, O, Y)
     end
     
-    function mlp(Ns, phis, loss, f)
+    function mlp(Ns, phis, loss, init)
         ps = {
             Ns: Ns
             phis: phis
         }
-        new(mlp::class(dh, dloss), ps, loss, f)
+        new(mlp::class(dh, dloss), ps, loss, init)
     end
 
-    function mlpwb(Ns, phis, loss, f)
+    function mlpwb(Ns, phis, loss, init)
         ps = {
             Ns: Ns
             phis: phis
         }
-        new(mlpwb::class(dh, dloss), ps, loss, f)
+        new(mlpwb::class(dh, dloss), ps, loss, init)
     end
 
-    function mlpz(Ns, phis, loss, f)
+    function mlpz(Ns, phis, loss, init)
         ps = {
             Ns: Ns
             phis: phis
         }
-        new(mlpz::class(dphi, dloss), ps, loss, f)
+        new(mlpz::class(dphi, dloss), ps, loss, init)
     end
 
-    function mlpzwb(Ns, phis, loss, f)
+    function mlpzwb(Ns, phis, loss, init)
         ps = {
             Ns: Ns
             phis: phis
         }
-        new(mlpzwb::class(dphi, dloss), ps, loss, f)
+        new(mlpzwb::class(dphi, dloss), ps, loss, init)
     end
     
     function next_minibatch(iter)
