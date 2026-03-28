@@ -94,8 +94,8 @@ module pl_luckboy_unn
 
     %% A Xavier initialization.
     %%
-    %% This function creates an initialized matrix if the `is_matrix` flag is `true`, otherwise
-    %% an initialized number. The distribution range of Xavier initialization is:
+    %% This function creates an initialized matrix if the `is_matrix` flag is set, otherwise an 
+    %% initialized number. The distribution range of Xavier initialization is:
     %%
     %% $$ U(-\sqrt{\frac{6}{N_{\mathrm{in}} + N_{\operatorname{out}}}}, \sqrt{\frac{6}{N_{\operatorname{in}} + N_{\mathrm{out}}}}) $$
     function xavier_init(N, M, IN, ON, is_matrix)
@@ -109,8 +109,8 @@ module pl_luckboy_unn
     
     %% A zero initialization.
     %%
-    %% This function creates an initialized matrix if the `is_matrix` flag is `true`, otherwise
-    %% an initialized number. The zero initialization fills the matrix with zeros or returns zero.
+    %% This function creates an initialized matrix if the `is_matrix` flag is set, otherwise an
+    %% initialized number. The zero initialization fills the matrix with zeros or returns zero.
     function zero_init(N, M, IN, ON, is_matrix)
         if is_matrix
             zeros(N, M)
@@ -137,7 +137,7 @@ module pl_luckboy_unn
         net.class.renew(net, init)
     end
     
-    %% Computes the output of neural network for the nural network.
+    %% Computes the outputs of neural network for the nural network.
     %%
     %% This function returns array with the output of neural network and the outputs of hidden
     %% layers if the `are_Hs` is `true`, otherwise only the outputs of neural network.
@@ -149,7 +149,8 @@ module pl_luckboy_unn
     %%
     %% This function takes the neural network, the `X` inputs, the `Hs` outputs of hidden layers,
     %% the `O` actual outputs, the `Y` expected outputs and then computes the partial derivatives
-    %% of parameters of neural network. 
+    %% of parameters of neural network. This function can return the partial derivatives of
+    %% parameters of neural network or an error.
     function compute_derivative(net, X, Hs, O, Y)
         net.class.df(net, X, Hs, O, Y)
     end
@@ -164,7 +165,7 @@ module pl_luckboy_unn
     %% # Examples
     %%
     %% ```
-    %% net = mpl(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% net = mlp(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
     %% ```
     function mlp(Ns, phis, loss, init)
         ps = {
@@ -185,7 +186,7 @@ module pl_luckboy_unn
     %% # Examples
     %%
     %% ```
-    %% net = mplwb(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% net = mlpwb(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
     %% ```
     function mlpwb(Ns, phis, loss, init)
         ps = {
@@ -205,7 +206,7 @@ module pl_luckboy_unn
     %% # Examples
     %%
     %% ```
-    %% net = mplz(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% net = mlpz(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
     %% ```
     function mlpz(Ns, phis, loss, init)
         ps = {
@@ -225,7 +226,7 @@ module pl_luckboy_unn
     %% # Examples
     %%
     %% ```
-    %% net = mplzwb(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% net = mlpzwb(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
     %% ```
     function mlpzwb(Ns, phis, loss, init)
         ps = {
@@ -246,7 +247,7 @@ module pl_luckboy_unn
         end
     end
     
-    %% Creates a minibatch iterator form the `X` inputs and `Y` outputs.
+    %% Creates a minibatch iterator from the `X` inputs and `Y` outputs.
     function minibatch(X, Y)
         {
             f: next_minibatch
@@ -258,12 +259,27 @@ module pl_luckboy_unn
 
     %% Returns the next element for the iterator.
     %%
-    %% This function returns the next element if the next element exists, otherwise returns `none`
-    %% and then resets the iterator to the initial state.
+    %% This function returns the next element if the next element exists, otherwise the resets the
+    %% iterator to the initial state and then returns `none`.
     function next(iter)
         iter.f(iter)
     end
     
+    
+    %% Trains the neural network.
+    %%
+    %% This function trains the neural network by the algorithm that is determined by the `alg`
+    %% algorithm function. The `ps` algorithm paremeters are passed to this function. Also, this
+    %% function takes the neural network, the `state` training state, the `l` values of loss
+    %% function. This function returns an array with the trained neural network, the last
+    %% training state, and the last values of loss function or an error. The training data is 
+    %% passed by the minibatch iterator. If the `dir` path isn't `none`, this function saves the
+    %% neural network,the algorithm  state, the values of loss function, and the algorithm 
+    %% parameters. A training progress is printed by this function if the `is_printing` flag is 
+    %% set. A progess chart is shown by this function if the `is_plotting` flag is set. If the 
+    %% neural network is `none`, this function ignores the `state` argument and the `l` argument 
+    %% and loads the neural network, the algorithm  state, the values of loss function, and the 
+    %% algorithm parameters from the `dir` directory.
     function train(epochs, net, state, l, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
         if net == none
             if dir != none
@@ -376,6 +392,26 @@ module pl_luckboy_unn
         .[ net, state, l .]
     end
     
+    %% Easily trains the neural network.
+    %%
+    %% This function trains the neural network by the algorithm that is determined by the `alg`
+    %% algorithm function. The `ps` algorithm paremeters are passed to this function. This
+    %% function returns the trained neural network or an error. The training data is passed by the
+    %% `X` inputs and the `Y` outputs. If the `dir` path isn't `none`, this function saves the
+    %% neural network, the algorithm  state, the values of loss function, and the algorithm
+    %% parameters. A training progress is printed by this function if the `is_printing` flag is
+    %% set. A progess chart is shown by this function if the `is_plotting` flag is set. If the
+    %% neural network is `none`, this function loads the neural network, the training state, the
+    %% values of loss function, and the algorithm parameters from the `dir` directory.
+    %%
+    %% # Examples
+    %%
+    %% ```
+    %% net = mlp(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
+    %% X = [rand() fill 100; fill 10]
+    %% Y = [rand() fill 100; fill 15]
+    %% net2 = etrain(100, net, X, Y, { eta: 0.1 }, alg::gd, none, true, true)
+    %% ```
     function etrain(epochs, net, X, Y, ps, alg, dir, is_printing, is_plotting)
         a = train(epochs, net, none, .[.], minibatch(X, Y), ps, alg, dir, is_printing, is_plotting)?
         a[1]
