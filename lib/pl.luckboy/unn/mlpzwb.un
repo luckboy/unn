@@ -5,7 +5,7 @@
 % License, v. 2.0. If a copy of the MPL was not distributed with this
 % file, You can obtain one at https://mozilla.org/MPL/2.0/.
 %
-%% MLP without biases for the swish function.
+%% A MLP with biases for the swish function.
 %%
 %% The parameters of neural network creation for this MLP are:
 %%
