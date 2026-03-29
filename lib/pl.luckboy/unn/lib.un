@@ -137,10 +137,10 @@ module pl_luckboy_unn
         net.class.renew(net, init)
     end
     
-    %% Computes the outputs of neural network for the nural network.
+    %% Computes the outputs for the neural network and the `X` inputs.
     %%
-    %% This function returns array with the output of neural network and the outputs of hidden
-    %% layers if the `are_Hs` is `true`, otherwise only the outputs of neural network.
+    %% This function returns array with the outputs and the outputs of hidden layers if the
+    %% `are_Hs` flag is set, otherwise only the outputs.
     function compute(net, X, are_Hs)
         net.class.f(net, X, are_Hs)
     end
@@ -157,8 +157,8 @@ module pl_luckboy_unn
     
     %% Creates a MLP without biases.
     %%
-    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
-    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% The elements of `Ns` array are sizes of inputs of layers and a size of output of last
+    %% layer. The elements of `phis` array are activation functions. The `Ns` length should be
     %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
     %% initialization function.
     %%
@@ -177,9 +177,8 @@ module pl_luckboy_unn
 
     %% Creates a MLP with biases.
     %%
-    %%
-    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
-    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% The elements of `Ns` array are sizes of inputs of layers and a size of output of last
+    %% layer. The elements of `phis` array are activation functions. The `Ns` length should be
     %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
     %% initialization function.
     %%
@@ -198,8 +197,8 @@ module pl_luckboy_unn
 
     %% Creates a MLP without biases for the swish function.
     %%
-    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
-    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% The elements of `Ns` array are sizes of inputs of layers and a size of output of last
+    %% layer. The elements of `phis` array are activation functions. The `Ns` length should be
     %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
     %% initialization function.
     %%
@@ -218,8 +217,8 @@ module pl_luckboy_unn
 
     %% Creates a MLP with biases for the swish function.
     %%
-    %% The elements of `Ns` array are sizes of inputs of layers and output of last layer. The
-    %% elements of `phis` array are activation functions. The `Ns` length should be
+    %% The elements of `Ns` array are sizes of inputs of layers and a size of output of last
+    %% layer. The elements of `phis` array are activation functions. The `Ns` length should be
     %% `length(phis) + 2`. This function also takes the `loss` function and the `init`
     %% initialization function.
     %%
@@ -275,11 +274,11 @@ module pl_luckboy_unn
     %% training state, and the last values of loss function or an error. The training data is 
     %% passed by the minibatch iterator. If the `dir` path isn't `none`, this function saves the
     %% neural network,the algorithm  state, the values of loss function, and the algorithm 
-    %% parameters. A training progress is printed by this function if the `is_printing` flag is 
-    %% set. A progress chart is shown by this function if the `is_plotting` flag is set. If the 
-    %% neural network is `none`, this function ignores the `state` argument and the `l` argument 
-    %% and loads the neural network, the algorithm  state, the values of loss function, and the 
-    %% algorithm parameters from the `dir` directory.
+    %% parameters. A training progress is printed if the `is_printing` flag is set. A progress 
+    %% chart is shown if the `is_plotting` flag is set. If the neural network is `none`, this
+    %% function ignores the `state` argument and the `l` argument and loads the neural network,
+    %% the algorithm  state, the values of loss function, and the algorithm parameters from the 
+    %% `dir` directory.
     function train(epochs, net, state, l, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
         if net == none
             if dir != none
@@ -399,10 +398,10 @@ module pl_luckboy_unn
     %% function returns the trained neural network or an error. The training data is passed by the
     %% `X` inputs and the `Y` outputs. If the `dir` path isn't `none`, this function saves the
     %% neural network, the algorithm  state, the values of loss function, and the algorithm
-    %% parameters. A training progress is printed by this function if the `is_printing` flag is
-    %% set. A progress chart is shown by this function if the `is_plotting` flag is set. If the
-    %% neural network is `none`, this function loads the neural network, the training state, the
-    %% values of loss function, and the algorithm parameters from the `dir` directory.
+    %% parameters. A training progress is printed if the `is_printing` flag is set. A progress 
+    %% chart is shown if the `is_plotting` flag is set. If the neural network is `none`, this 
+    %% function loads the neural network, the training state, the values of loss function, and the
+    %% algorithm parameters from the `dir` directory.
     %%
     %% # Examples
     %%
