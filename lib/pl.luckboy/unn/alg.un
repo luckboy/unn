@@ -5,15 +5,36 @@
 % License, v. 2.0. If a copy of the MPL was not distributed with this
 % file, You can obtain one at https://mozilla.org/MPL/2.0/.
 %
+%% A module of algorithms.
 module alg
     usevar("pl_luckboy_unn::zero_init")
     usevar("pl_luckboy_unn::renew")
 
+    %% A gradient descent algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta` - $\eta$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - \eta {\mathbf{g}}_t $$
     function gd(net, ps, state, g)
         net = net .- ps.eta .* g
         .[ net, state .]
     end
     
+    %% An exponential stochastic gradient descent algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta0` - $\eta_0$
+    %% - `lambda` - $\lambda$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ \eta(t) = \eta_0 e^{-\lambda t} $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - \eta(t) {\mathbf{g}}_t $$
     function exp_sgd(net, ps, state, g)
         if state == none
             state = {
@@ -26,6 +47,18 @@ module alg
         .[ net, state .]
     end
 
+    %% A polynomial stochastic gradient descent algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta0` - $\eta_0$
+    %% - `alpha` - $\alpha$
+    %% - `beta` - $\beta$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ \eta(t) = \eta_0 (\beta t + 1)^{-\alpha} $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - \eta(t) {\mathbf{g}}_t $$
     function poly_sgd(net, ps, state, g)
         if state == none
             state = {
@@ -38,6 +71,17 @@ module alg
         .[ net, state .]
     end
     
+    %% A Momentum algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta` - $\eta$
+    %% - `beta` - $\beta$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ {\mathbf{v}}_t \leftarrow \beta {\mathbf{v}}_{t - 1} + {\mathbf{g}}_t $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - \eta {\mathbf{v}}_t $$
     function momentum(net, ps, state, g)
         if state == none
             state = {
@@ -49,6 +93,17 @@ module alg
         .[ net, state .]
     end
     
+    %% An Adagrad algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta` - $\eta$
+    %% - `eps` - $\epsilon$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ {\mathbf{s}}_t \leftarrow {\mathbf{s}}_{t - 1} + {{\mathbf{g}}_t}^2 $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - \frac{\eta}{\sqrt{{\mathbf{s}}_t + \epsilon}} \odot {\mathbf{g}}_t $$
     function adagrad(net, ps, state, g)
         if state == none
             state = {
@@ -60,6 +115,18 @@ module alg
         .[ net, state .]
     end
 
+    %% A RMSProp algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta` - $\eta$
+    %% - `gamma` - $\gamma$
+    %% - `eps` - $\epsilon$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ {\mathbf{s}}_t \leftarrow \gamma {\mathbf{s}}_{t - 1} + (1 - \gamma) {{\mathbf{g}}_t}^2 $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - \frac{\eta}{\sqrt{{\mathbf{s}}_t + \epsilon}} \odot {\mathbf{g}}_t $$
     function rms_prop(net, ps, state, g)
         if state == none
             state = {
@@ -71,6 +138,20 @@ module alg
         .[ net, state .]
     end
 
+    %% An Adadelta algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta` - $\eta$
+    %% - `rho` - $\gamma$
+    %% - `eps` - $\epsilon$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ {\mathbf{s}}_t \leftarrow \rho {\mathbf{s}}_{t - 1} + (1 - \rho) {{\mathbf{g}}_t}^2 $$
+    %% $$ {\mathbf{g}}'_t = \frac{\sqrt{\Delta {\mathbf{x}}_{t - 1} + \epsilon}}{\sqrt{{\mathbf{s}}_t + \epsilon}} \odot {\mathbf{g}}_t $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - {\mathbf{g}}'_t $$
+    %% $$ \Delta {\mathbf{x}}_t \leftarrow \rho \Delta {\mathbf{x}}_{t - 1} + (1 - \rho) {{\mathbf{g}}'_t}^2 $$
     function adadelta(net, ps, state, g)
         if state == none
             state = {
@@ -85,6 +166,23 @@ module alg
         .[ net, state .]
     end
 
+    %% An Adam algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta` - $\eta$
+    %% - `beta1` - $\beta_1$
+    %% - `beta2` - $\beta_2$
+    %% - `eps` - $\epsilon$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ {\mathbf{v}}_t \leftarrow \beta_1 {\mathbf{v}}_{t - 1} + (1 - \beta_1) {\mathbf{g}}_t $$
+    %% $$ {\mathbf{s}}_t \leftarrow \beta_2 {\mathbf{s}}_{t - 1} + (1 - \beta_2) {{\mathbf{g}}_t}^2 $$
+    %% $$ {\mathbf{v}}'_t = \frac{{\mathbf{v}}_t}{1 - {\beta_1}^t} $$
+    %% $$ {\mathbf{s}}'_t = \frac{{\mathbf{s}}_t}{1 - {\beta_2}^t} $$
+    %% $$ {\mathbf{g}}'_t = \frac{\eta {\mathbf{v}}'_t}{\sqrt{{\mathbf{s}}'_t} + \epsilon} $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - {\mathbf{g}}'_t $$
     function adam(net, ps, state, g)
         if state == none
             state = {
@@ -103,6 +201,23 @@ module alg
         .[ net, state .]
     end
 
+    %% An Yogi algorithm.
+    %%
+    %% The algorithm parameters for this algorithm are:
+    %%
+    %% - `eta` - $\eta$
+    %% - `beta1` - $\beta_1$
+    %% - `beta2` - $\beta_2$
+    %% - `eps` - $\epsilon$
+    %%
+    %% This algorithm is:
+    %%
+    %% $$ {\mathbf{v}}_t \leftarrow \beta_1 {\mathbf{v}}_{t - 1} + (1 - \beta_1) {\mathbf{g}}_t $$
+    %% $$ {\mathbf{s}}_t \leftarrow \beta_2 {\mathbf{s}}_{t - 1} + (1 - \beta_2) {{\mathbf{g}}_t}^2 \odot \operatorname{sgn}({{\mathbf{g}}_t}^2 - {\mathbf{s}}_{t - 1}) $$
+    %% $$ {\mathbf{v}}'_t = \frac{{\mathbf{v}}_t}{1 - {\beta_1}^t} $$
+    %% $$ {\mathbf{s}}'_t = \frac{{\mathbf{s}}_t}{1 - {\beta_2}^t} $$
+    %% $$ {\mathbf{g}}'_t = \frac{\eta {\mathbf{v}}'_t}{\sqrt{{\mathbf{s}}'_t} + \epsilon} $$
+    %% $$ {\mathbf{x}}_t \leftarrow {\mathbf{x}}_{t - 1} - {\mathbf{g}}'_t $$
     function yogi(net, ps, state, g)
         if state == none
             state = {
