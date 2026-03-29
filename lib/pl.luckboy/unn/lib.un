@@ -409,7 +409,7 @@ module pl_luckboy_unn
     %% net = mlp(.[ 10, 100, 15 .], .[ tanh .], se, xavier_init)
     %% X = [rand() fill 100; fill 10]
     %% Y = [rand() fill 100; fill 15]
-    %% net2 = etrain(100, net, X, Y, { eta: 0.1 }, alg::gd, none, true, true)
+    %% net2 = etrain(100, net, X, Y, { eta: 0.1 }, alg::gd, none, true, true)?
     %% ```
     function etrain(epochs, net, X, Y, ps, alg, dir, is_printing, is_plotting)
         a = train(epochs, net, none, .[.], minibatch(X, Y), ps, alg, dir, is_printing, is_plotting)?
