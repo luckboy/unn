@@ -5,7 +5,16 @@
 % License, v. 2.0. If a copy of the MPL was not distributed with this
 % file, You can obtain one at https://mozilla.org/MPL/2.0/.
 %
+%% MLP without biases.
+%%
+%% The parameters of neural network creation for this MLP are:
+%%
+%% - `Ns` - the sizes of inputs of layers and the size of output of last layer
+%% - `phis` - the activation functions
+%%
+%% The `Ns` length should be `length(phis) + 2`.
 module mlp
+    %% Computes outputs for the neural network.
     function compute(net, X, are_Hs)
         H = X
         if are_Hs
@@ -26,6 +35,7 @@ module mlp
         end
     end
 
+    %% Computes the partial derivatives of parameters of neural network by using backpropagation.
     function backpropagate(net, X, Hs, O, Y)
         dJ_dWs = .[.]
         dJ_dO = net.class.dloss(net.loss, O, Y)?
@@ -53,6 +63,7 @@ module mlp
         }
     end
 
+    %% Creates a neural network.
     function new(class, ps, loss, init)
         Ws = .[.]
         for i in 1 to length(ps.Ns) - 1
@@ -66,6 +77,7 @@ module mlp
         }
     end
 
+    %% Creates a neural network from other neural network.
     function renew(net, init)
         Ws = .[.]
         for i in 1 to length(net.Ws)
@@ -79,6 +91,11 @@ module mlp
         }
     end
     
+    %% Creates a class of neural network.
+    %%
+    %% The `dh` argument and the `dloss` should be the [`dh`](../pl_luckboy_unn.html#var.dh)
+    %% function and the the [`dloss`](../pl_luckboy_unn.html#var.dloss) function. An user can use
+    %% own functions to calculation of derivatives.
     function class(dh, dloss)
         {
             new: new

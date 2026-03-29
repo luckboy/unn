@@ -80,8 +80,8 @@ module pl_luckboy_unn
     %% and then calculates the derivative for they. If the `f` function isn't supported, this
     %% function returns an error. This function supports the following functions:
     %%
-    %% - `se`
-    %% - `cel`
+    %% - [`se`](#var.se)
+    %% - [`cel`](#var.cel)
     function dloss(f, O, Y)
         if f == se
             O .- Y
@@ -128,7 +128,7 @@ module pl_luckboy_unn
         class.new(class, ps, loss, init)
     end
     
-    %% Recreates the neural network.
+    %% Creates a neural network from other neural network.
     %%
     %% This function takes the neural network, and the `init` initialization function and then
     %% creates a new neural network from the neural network for the `init` initialization funciton.
@@ -137,10 +137,10 @@ module pl_luckboy_unn
         net.class.renew(net, init)
     end
     
-    %% Computes the outputs for the neural network and the `X` inputs.
+    %% Computes outputs for the neural network and the `X` inputs.
     %%
-    %% This function returns array with the outputs and the outputs of hidden layers if the
-    %% `are_Hs` flag is set, otherwise only the outputs.
+    %% This function returns array with outputs of neural network and outputs of hidden layers if
+    %% the `are_Hs` flag is set, otherwise only the outputs of neural network.
     function compute(net, X, are_Hs)
         net.class.f(net, X, are_Hs)
     end

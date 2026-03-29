@@ -5,7 +5,17 @@
 % License, v. 2.0. If a copy of the MPL was not distributed with this
 % file, You can obtain one at https://mozilla.org/MPL/2.0/.
 %
+%% MLP without biases for the swish function.
+%%
+%% The parameters of neural network creation for this MLP are:
+%%
+%% - `Ns` - the sizes of inputs of layers and the size of output of last layer
+%% - `phis` - the activation functions
+%%
+%% The `Ns` length should be `length(phis) + 2`. This MLP uses inputs of activation functions
+%% instead outputs of hidden layers for backpropagation.
 module mlpzwb
+    %% Computes outputs for the neural network.
     function compute(net, X, are_Zs)
         H = X
         if are_Zs
@@ -36,6 +46,7 @@ module mlpzwb
         end
     end
 
+    %% Computes the partial derivatives of parameters of neural network by using backpropagation.
     function backpropagate(net, X, Zs, O, Y)
         dJ_dWs = .[.]
         dJ_dbs = .[.]
@@ -70,6 +81,7 @@ module mlpzwb
         }
     end
 
+    %% Creates a neural network.
     function new(class, ps, loss, init)
         Ws = .[.]
         bs = .[.]
@@ -86,6 +98,7 @@ module mlpzwb
         }
     end
 
+    %% Creates a neural network from other neural network.
     function renew(net, init)
         Ws = .[.]
         bs = .[.]
@@ -102,6 +115,11 @@ module mlpzwb
         }
     end
     
+    %% Creates a class of neural network.
+    %%
+    %% The `dphi` argument and the `dloss` should be the [`dphi`](../pl_luckboy_unn.html#var.dphi)
+    %% function and the the [`dloss`](../pl_luckboy_unn.html#var.dloss) function. An user can use
+    %% own functions to calculation of derivatives.
     function class(dphi, dloss)
         {
             new: new
