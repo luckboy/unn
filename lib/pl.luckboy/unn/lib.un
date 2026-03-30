@@ -276,9 +276,10 @@ module pl_luckboy_unn
     %% neural network,the algorithm  state, the values of loss function, and the algorithm 
     %% parameters. A training progress is printed if the `is_printing` flag is set. A progress 
     %% chart is shown if the `is_plotting` flag is set. If the neural network is `none`, this
-    %% function ignores the `state` argument and the `l` argument and loads the neural network,
-    %% the algorithm  state, the values of loss function, and the algorithm parameters from the 
-    %% `dir` directory.
+    %% function ignores the `state` argument, and the `l` argument and then loads the neural
+    %% network, the algorithm  state, the values of loss function, and then algorithm parameters
+    %% from the `dir` directory. If the `state` training state is `none`, the training state is
+    %% initialized by the `alg` algorithm function.
     function train(epochs, net, state, l, minibatch_iter, ps, alg, dir, is_printing, is_plotting)
         if net == none
             if dir != none
