@@ -14,7 +14,7 @@
 %% # Inputs and outputs
 %%
 %% Inputs and outputs in this library is represented by matrices. Each column of this matrix is
-%% inputs of single sample or outputs of single sample. A input of single neuron or a output of
+%% inputs of single sample or outputs of single sample. An input of single neuron or an output of
 %% single neuron is represented by the row of this matrix.
 %%
 %% # Neural network
