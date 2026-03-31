@@ -5,6 +5,42 @@
 % License, v. 2.0. If a copy of the MPL was not distributed with this
 % file, You can obtain one at https://mozilla.org/MPL/2.0/.
 %
+%% Micro neural network library that is written in the Unlab scripting language.
+%%
+%% This library implements basic neural networks for example MLP (Multilayer Perceptron) and
+%% functions to train they. Also, this library contains optimization algorithms which can be used
+%% to train neural network.
+%%
+%% # Training data
+%%
+%% Training data in this library is represented by matrices. Each column of this matrix is input
+%% vector of neural network or output vector of neural network. An input neuron of neural network
+%% or an output neuron of neuron network is represented by the row of this matrix.
+%%
+%% # Neural network
+%%
+%% A neural network should contain the following fields:
+%%
+%% - `class` - class of neural network
+%% - `loss` - loss function
+%%
+%% # Class of neural network
+%%
+%% A class of neural network should contain the following fields:
+%%
+%% - `new` - function that creates a neural network
+%% - `renew` - function that creates a neural network from other neural network
+%% - `f` - function that computes outputs for the neural network
+%% - `df` - function that computes the partial derivatives of parameters of neural network
+%% - `dh` - function that calculates the derivative of hidden layer (optional)
+%% - `dphi` - function that calculates the derivative of activation function (optional)
+%% - `dloss` - function that calculates the derivative of loss function (optional)
+%%
+%% # Iterator
+%%
+%% An iterator should contain the following fields:
+%%
+%% - `f` - function that returns the next element
 module pl_luckboy_unn
     runwithdoc("mlp.un")
     runwithdoc("mlpwb.un")
