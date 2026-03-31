@@ -11,11 +11,11 @@
 %% functions to train they. Also, this library contains optimization algorithms which can be used
 %% to train neural network.
 %%
-%% # Training data
+%% # Inputs and outputs
 %%
-%% Training data in this library is represented by matrices. Each column of this matrix is input
-%% vector of neural network or output vector of neural network. An input neuron of neural network
-%% or an output neuron of neuron network is represented by the row of this matrix.
+%% Inputs and outputs in this library is represented by matrices. Each column of this matrix is
+%% inputs of single sample or outputs of single sample. A input of single neuron or a output of
+%% single neuron is represented by the row of this matrix.
 %%
 %% # Neural network
 %%
