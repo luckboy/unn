@@ -21,7 +21,8 @@ If you want to use this library in your project, you add the following lines in 
 "github.com/luckboy/unn" = "0.1.0"
 ```
 
-Then you install dependencies in your project by invoke the following command:
+Then you install dependencies of your project by invoke the following command in the directory of
+your project:
 
 ```
 unlab-pkg install-deps
