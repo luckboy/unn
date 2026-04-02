@@ -41,6 +41,16 @@
 %% An iterator should contain the following fields:
 %%
 %% - `f` - function that returns the next element
+%%
+%% # Training directory
+%%
+%% A directory for the [`train`](#var.train) function and/or the [`etrain`](#var.etrain) function
+%% contains the following files after training:
+%%
+%% - `net.bin` - neural network
+%% - `state.bin` - algorithm state
+%% - `loss.bin` - values of loss function
+%% - `params.bin` - algorithm parameters
 module pl_luckboy_unn
     runwithdoc("mlp.un")
     runwithdoc("mlpwb.un")
