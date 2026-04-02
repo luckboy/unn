@@ -14,14 +14,14 @@ unlab-pkg install github.com/luckboy/unn
 
 ## Usage
 
-You can use this library in add the following lines in the `Unlab.toml` file:
+If you want to use this library in your project, you add the following lines in the `Unlab.toml` file:
 
 ```toml
 [dependencies]
 "github.com/luckboy/unn" = "0.1.0"
 ```
 
-Then you install this library as dependency for your project invoke the following command:
+Then you install dependencies in your project by invoke the following command:
 
 ```
 unlab-pkg install-deps
@@ -29,7 +29,7 @@ unlab-pkg install-deps
 
 Then you add the following line in the `lib.un` file:
 
-```
+```unlab
 uselib("pl.luckboy/unn")
 ```
 
@@ -37,7 +37,7 @@ uselib("pl.luckboy/unn")
 
 The following example presents the training of neural network:
 
-```
+```unlab
 uselib("pl.luckboy/unn")
 usemods("pl_luckboy_unn")
 usevars("pl_luckboy_unn")
