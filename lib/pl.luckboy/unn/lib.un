@@ -9,7 +9,7 @@
 %%
 %% This library implements basic neural networks for example MLP (Multilayer Perceptron) and
 %% functions to train they. Also, this library contains optimization algorithms which can be used
-%% to train neural network.
+%% to train neural networks.
 %%
 %% # Inputs and outputs
 %%
