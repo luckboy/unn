@@ -2,7 +2,7 @@
 
 Micro neural network library that is written in the Unlab scripting language. This library implements
 basic neural networks that can be trained by training functions of this library. Also, this library
-contains optimization algorithms which can be used to train neural network.
+contains optimization algorithms which can be used to train neural networks.
 
 ## Installation
 
