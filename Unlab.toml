@@ -1,5 +1,7 @@
 [package]
 name = "github.com/luckboy/unn"
 authors = ["Łukasz Szpakowski <luckboy@vp.pl>"]
+license = "MPL-2.0"
+description = "Micro neural network library for Unlab scripting language."
 
 [dependencies]
