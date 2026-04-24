@@ -18,7 +18,7 @@ If you want to use this library in your project, you add the following lines in 
 
 ```toml
 [dependencies]
-"github.com/luckboy/unn" = "0.1.0"
+"github.com/luckboy/unn" = "0.1.1"
 ```
 
 Then you install dependencies of your project by invoke the following command in the directory of
