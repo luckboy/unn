@@ -72,9 +72,9 @@ module pl_luckboy_unn
     %%
     %% The cross-entropy loss is:
     %%
-    %% $$ l = \sum^N_{i = 1}{\sum^M_{j = 1}{-y_{ij} \ln{o_{ij}}}} $$
+    %% $$ l = \sum^N_{i = 1}{\sum^M_{j = 1}{-y_{ij} \ln{\frac{e^{o_{ij}}}{\sum^N_{k = 1}{e^{o_{kj}}}}}}} $$
     function cel(O, Y)
-        L = .- Y .* log(O)
+        L = .- Y .* log(softmax(O))
         matrixarray((L * ones(columns(L), 1))' * ones(rows(L), 1))[1][1]
     end
     
